@@ -1,19 +1,19 @@
-/*
+/* 
 ==================================================
  Entity
-
- An original simulation of a non-traditional
- biology-inspired neural network evolving in
+ 
+ An original simulation of a non-traditional 
+ biology-inspired neural network evolving in 
  a naturally selective environment to demonstrate
  the emergence of directed survival behavior.
-
+ 
 Copyright (C) 11 November 2013 Souvik Das
 ALL RIGHTS RESERVED
 =================================================
 */
 
-#include "../models/Entity.h"
-#include "../models/ToolBox.h"
+#include "../interface/Entity.h"
+#include "../interface/ToolBox.h"
 
 Entity::Entity(double worldSize)
 {
