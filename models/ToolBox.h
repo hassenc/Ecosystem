@@ -5,9 +5,14 @@
 
 static const double pi=3.14159265358979;
 
-inline int decodeDebug(int d, int i) 
+inline int decodeDebug(int d, int i)
 {
   return (d>>i)&0x1;
+}
+
+inline double distance(double x1, double y1, double x2, double y2)
+{
+  return sqrt(pow(y2-y1,2)+pow(x2-x1,2));
 }
 
 inline double convertToZeroToPi(double angle)
@@ -34,7 +39,7 @@ inline bool inBetween(double a, double x1, double x2)
   else return false;
 }
 
-inline std::string itoa(int i) 
+inline std::string itoa(int i)
 {
   char res[10];
   sprintf(res, "%d", i);
@@ -42,7 +47,7 @@ inline std::string itoa(int i)
   return ret;
 }
 
-inline std::string ftoa(double i) 
+inline std::string ftoa(double i)
 {
   char res[10];
   sprintf(res, "%f", i);

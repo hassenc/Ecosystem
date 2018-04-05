@@ -26,6 +26,7 @@
 #include <TGraph.h>
 //
 #include "models/Creature.h"
+#include "models/Plank.h"
 // #include "interface/Neuron.h"
 // #include "interface/Brain.h"
 // #include "interface/Fire.h"
@@ -35,9 +36,10 @@
 
 int timeStep=200;
 int nCreatures=1;
+int nPlanks=1;
 double worldSize=700;
 
-int seed=100;
+int seed=90;
 
 // Debug Levels
 // bits: xxxx
@@ -61,13 +63,21 @@ int main(int argc, char *argv[])
   gStyle->SetPalette(1);
 
   typedef std::vector<Creature*> Creatures;
+  typedef std::vector<Plank*> Planks;
   Creatures creatures;
+  Planks planks;
   for (unsigned int i=0; i<nCreatures; ++i)
   {
-    Creature *creature=new Creature("Creature", r3->Rndm()*worldSize, r3->Rndm()*worldSize, r3->Rndm()*2.*pi, pi/4., 30, kBlue, 1.0, "Bot_"+itoa(i), worldSize, debug);
+    Creature *creature=new Creature("Creature", r3->Rndm()*worldSize, r3->Rndm()*worldSize, r3->Rndm()*2.*pi, pi/4., 30, kBlue, 4.0, "Bot_"+itoa(i), worldSize, debug);
     creatures.push_back(creature);
   }
   std::cout<<"Instantiated creatures."<<std::endl;
+  for (unsigned int i=0; i<nPlanks; ++i)
+  {
+    Plank *plank=new Plank("Plank", r3->Rndm()*worldSize, r3->Rndm()*worldSize, r3->Rndm()*2.*pi, kBlue, 4.0, "Plank_"+itoa(i), worldSize, debug);
+    planks.push_back(plank);
+  }
+  std::cout<<"Instantiated planks."<<std::endl;
 
 
   std::vector <double> time_vector;
@@ -103,8 +113,13 @@ int main(int argc, char *argv[])
       // creatures.at(i)->seeFoods(&foods);
       // creatures.at(i)->seeBots(&creatures);
       // creatures.at(i)->seeBots(&predators);
+      planks.at(i)->moveForward();
       creatures.at(i)->moveForward();
       creatures.at(i)->stepInTime();
+      bool isColliding = creatures.at(i)->isColliding(planks.at(i));
+      if (isColliding) {
+        std::cout<<"Collision."<<isColliding<<std::endl;
+      }
     }
 
     // Draw visualization
@@ -112,6 +127,7 @@ int main(int argc, char *argv[])
     {
       c_World->cd();
       for (unsigned int i=0; i<creatures.size(); ++i) creatures.at(i)->draw();
+      for (unsigned int i=0; i<planks.size(); ++i) planks.at(i)->draw();
       text->Draw();
       c_World->Update();
       // c_World->SaveAs(("Movie/c_World_"+itoa(time)+".png").c_str());

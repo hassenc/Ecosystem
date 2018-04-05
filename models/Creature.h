@@ -7,6 +7,7 @@
 #pragma once
 
 
+#include "Plank.h"
 #include "Entity.h"
 #include "TLine.h"
 
@@ -35,6 +36,7 @@ class Creature: public Entity
     void moveForward();
     void moveBackward();
     // void seeEntity(Entity *entity);
+    bool isColliding(Plank *plank);
     // void seePlanks(std::vector<Plank*> *planks);
     // void seeCreatures(std::vector<Creature*> *creatures);
 

@@ -155,6 +155,28 @@ void Creature::moveBackward()
   y_=y_-speed_*sin(theta_);
   // bouncyBoundaries();
 }
+
+bool Creature::isColliding(Plank *plank)
+{
+  // TODO make circle_->GetX1 more generic
+  double x1;
+  double y1;
+  double x2;
+  double y2;
+  double x0;
+  double y0;
+  double distance_to_plank;
+  x1 = plank->line_->GetX1();
+  y1 = plank->line_->GetY1();
+  x2 = plank->line_->GetX2();
+  y2 = plank->line_->GetY2();
+  x0 = this->circle_->GetX1();
+  y0 = this->circle_->GetY1();
+  distance_to_plank = fabs((y2-y1)*x0-(x2-x1)*y0+x2*y1-y2*x1)/distance(x1,y1,x2,y2);
+  std::cout<<"Collision."<<round(distance_to_plank)<<std::endl;
+  return round(distance_to_plank) == 0;
+  // plank
+}
 //
 // void Creature::seeEntity(Entity *entity)
 // {
