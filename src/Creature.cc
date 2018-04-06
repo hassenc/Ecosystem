@@ -54,6 +54,7 @@ Creature::Creature(Creature *parentCreature, double mu_newNeuron, double mu_newC
   name_=parentCreature->name_+"_"+itoa(parentCreature->kids_);
   bodyColor_=parentCreature->bodyColor_;
   speed_=parentCreature->speed_;
+  numberOfcaptors_ = 8;
   kids_=0;
   x_=parentCreature->x_;
   y_=parentCreature->y_;
@@ -166,16 +167,60 @@ bool Creature::isColliding(Plank *plank)
   double x0;
   double y0;
   double distance_to_plank;
+  double distance_to_plank_center;
+  double max_distance_to_line;
+  double max_distance_to_plank_center;
   x1 = plank->line_->GetX1();
   y1 = plank->line_->GetY1();
   x2 = plank->line_->GetX2();
   y2 = plank->line_->GetY2();
   x0 = this->circle_->GetX1();
   y0 = this->circle_->GetY1();
-  distance_to_plank = fabs((y2-y1)*x0-(x2-x1)*y0+x2*y1-y2*x1)/distance(x1,y1,x2,y2);
-  std::cout<<"Collision."<<round(distance_to_plank)<<std::endl;
-  return round(distance_to_plank) == 0;
-  // plank
+  distance_to_plank = fabs((y2-y1)*x0-(x2-x1)*y0+x2*y1-y2*x1)/distance(x1,y1,x2,y2); // this is the distance from point to line
+  max_distance_to_line = (plank->speed_ + this->speed_)/2; // if line and plank are going toward each other, they get closer by the sum of speeds every step
+  max_distance_to_plank_center = sqrt(pow(max_distance_to_line,2) + pow(plank->length_/2,2)); //max distance when going toward each other and point is at the edge of the plank
+  distance_to_plank_center = distance(x0,y0,(x2 + x1)/2.,(y1 + y2)/2.);
+  return round(distance_to_plank) <= max_distance_to_line && distance_to_plank_center <= max_distance_to_plank_center;
+}
+
+
+Creature::Senses Creature::getSenses(std::vector<Plank> planks) {
+  // Creature::Senses senses;
+  std::vector<double> senses;
+  double angle;
+  for (unsigned int i=0; i<numberOfcaptors_; ++i)
+  {
+    angle = pi * 2 / this->numberOfcaptors_;
+    senses.push_back(this->getNearestDistanceForAngle(planks, angle));
+  }
+  return senses;
+}
+
+double Creature::getNearestDistanceForAngle(std::vector<Plank> planks, double angle) {
+  double ax;
+  double ay;
+  double x;
+  double y;
+  double max_dist = worldSize_*100;
+  double dist = max_dist;
+  ax = cos(this->visualAngle_ + angle);
+	ay = sin(this->visualAngle_ + angle);
+  x = this->x_ + ax;
+	y = this->y_ + ay;
+  while (x < worldSize_ && x >= 0 && y < worldSize_ && y >= 0 && dist == max_dist)
+  {
+    //TODO test if x,y is on segment by looping on segments here
+    for (unsigned int i=0; i<planks.size(); ++i) {
+      Plank plank = planks[i];
+      if (isOnSegment(x,y, plank.line_->GetX1(), plank.line_->GetY1(), plank.line_->GetX2(), plank.line_->GetY2())) {
+        dist = distance(this->x_ , this->y_, x, y);
+        break;
+      };
+    };
+		x = x + ax;
+		y = y +ay;
+  };
+  return dist;
 }
 //
 // void Creature::seeEntity(Entity *entity)

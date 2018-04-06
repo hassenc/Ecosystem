@@ -15,11 +15,15 @@ class Creature: public Entity
 {
   public:
 
+    typedef std::vector<double> Senses;
+    typedef std::vector<Plank*> Planks;
+
     // Brain *brain_;
     std::string name_;
     TEllipse *visRange1_, *visRange2_, *visRange3_;
     TLine *visPeriphery1_, *visPeriphery2_;
     double visualAngle_;
+    double numberOfcaptors_;
     int bodyColor_;
     double speed_;
     double worldSize_;
@@ -37,6 +41,8 @@ class Creature: public Entity
     void moveBackward();
     // void seeEntity(Entity *entity);
     bool isColliding(Plank *plank);
+    Senses getSenses(std::vector<Plank> planks);
+    double getNearestDistanceForAngle(std::vector<Plank> planks, double angle);
     // void seePlanks(std::vector<Plank*> *planks);
     // void seeCreatures(std::vector<Creature*> *creatures);
 

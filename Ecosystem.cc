@@ -37,7 +37,7 @@
 int timeStep=200;
 int nCreatures=1;
 int nPlanks=1;
-double worldSize=700;
+double worldSize=500;
 
 int seed=90;
 
@@ -68,13 +68,14 @@ int main(int argc, char *argv[])
   Planks planks;
   for (unsigned int i=0; i<nCreatures; ++i)
   {
-    Creature *creature=new Creature("Creature", r3->Rndm()*worldSize, r3->Rndm()*worldSize, r3->Rndm()*2.*pi, pi/4., 30, kBlue, 4.0, "Bot_"+itoa(i), worldSize, debug);
+    // Spped must be < 1 otherwise collision detection problem
+    Creature *creature=new Creature("Creature", r3->Rndm()*worldSize, r3->Rndm()*worldSize, r3->Rndm()*2.*pi, pi/4., 30, kBlue, 5.0, "Bot_"+itoa(i), worldSize, debug);
     creatures.push_back(creature);
   }
   std::cout<<"Instantiated creatures."<<std::endl;
   for (unsigned int i=0; i<nPlanks; ++i)
   {
-    Plank *plank=new Plank("Plank", r3->Rndm()*worldSize, r3->Rndm()*worldSize, r3->Rndm()*2.*pi, kBlue, 4.0, "Plank_"+itoa(i), worldSize, debug);
+    Plank *plank=new Plank("Plank", r3->Rndm()*worldSize, r3->Rndm()*worldSize, r3->Rndm()*2.*pi, kBlue, 5.0, "Plank_"+itoa(i), worldSize, debug);
     planks.push_back(plank);
   }
   std::cout<<"Instantiated planks."<<std::endl;
@@ -102,7 +103,7 @@ int main(int argc, char *argv[])
   int dtime=0;
   std::cout<<"Starting."<<std::endl;
   // Time loop
-  while (time<1000)
+  while (time<2000)
   {
     // std::cout<<"Time: "<<time<<std::endl;
     ++time;

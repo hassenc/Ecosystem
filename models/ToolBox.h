@@ -15,6 +15,29 @@ inline double distance(double x1, double y1, double x2, double y2)
   return sqrt(pow(y2-y1,2)+pow(x2-x1,2));
 }
 
+// Determinanat v1 (x1 y1) v2 (x2 y2) ?
+inline bool determinant(double x1, double y1, double x2, double y2)
+{
+  return x1*y2-x2*y1;
+}
+
+// Scalar Product v1 (x1 y1) v2 (x2 y2) ?
+inline bool scalar(double x1, double y1, double x2, double y2)
+{
+  return x1*x2+y1*y2;
+}
+
+// Is x,y on the segment defined by x1 y1 x2 y2 ?
+inline bool isOnSegment(double x, double y, double x1, double y1, double x2, double y2)
+{
+  bool isOnSegment = false;
+  //We check that determinant(ab,ac) = 0 && scalar(ca,cb)<0
+  isOnSegment = determinant(x2-x1, y2-y1, x-x1, y-y1) == 0 && scalar(x1-x, y1-y, x2-x, y2-y) <=0;
+  
+  return isOnSegment;
+}
+
+
 inline double convertToZeroToPi(double angle)
 {
   if (angle<0) return 2.*pi+angle;
