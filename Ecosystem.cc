@@ -120,10 +120,7 @@ int main(int argc, char *argv[])
     if (!creatures.empty()) {
       for (int i = creatures.size() - 1; i >= 0; i--)
       {
-        // creatures.at(i)->seeFoods(&foods);
-        // creatures.at(i)->seeBots(&creatures);
-        // creatures.at(i)->seeBots(&predators);
-        creatures.at(i)->moveForward();
+        // creatures.at(i)->moveForward();
         creatures.at(i)->stepInTime();
         Creature::Senses senses = creatures.at(i)->getSenses(planks);
 

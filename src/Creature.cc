@@ -6,6 +6,7 @@
 */
 
 #include "../models/Creature.h"
+// #include "../models/Brain.h"
 #include "../models/ToolBox.h"
 
 #include <iostream>
@@ -26,7 +27,7 @@ Creature::Creature(std::string type, double x, double y, double theta, double vi
   y_=y;
   theta_=theta;
   visualAngle_=visualAngle;
-  // brain_=new Brain(brainSize, debug_, name_);
+  brain_=new Brain(brainSize, debug_, name_);
   if (decodeDebug(debug_, 0)==1)
   {
     circle_=new TEllipse(x, y, 10.);
@@ -95,9 +96,9 @@ Creature::Creature(Creature *parentCreature, double mu_newNeuron, double mu_newC
 
   double rnd=r3->Rndm();
   int diffBrainSize=0;
-  // if (rnd<mu_newNeuron/2. && parentCreature->brain_->neurons_.size()>20) diffBrainSize=-1;
-  // else if (rnd>1.-mu_newNeuron/2.) diffBrainSize=1;
-  // brain_=new Brain(parentCreature->brain_, diffBrainSize, debug_, name_, mu_newConnection, mu_modConnection);
+  if (rnd<mu_newNeuron/2. && parentCreature->brain_->neurons_.size()>20) diffBrainSize=-1;
+  else if (rnd>1.-mu_newNeuron/2.) diffBrainSize=1;
+  brain_=new Brain(parentCreature->brain_, diffBrainSize, debug_, name_, mu_newConnection, mu_modConnection);
 }
 
 Creature::~Creature()
@@ -341,11 +342,11 @@ double Creature::getNearestDistanceForAngle(std::vector<Plank*> planks, double a
 
 void Creature::stepInTime()
 {
-  // brain_->stepInTime();
-  // if (brain_->neurons_.at(12)->potential()>0.4) moveForward();
-  // if (brain_->neurons_.at(13)->potential()>0.4) turnLeft();
-  // if (brain_->neurons_.at(14)->potential()>0.4) turnRight();
-  // if (brain_->neurons_.at(15)->potential()>0.4) moveBackward();
+  brain_->stepInTime();
+  if (brain_->neurons_.at(12)->potential()>0.4) moveForward();
+  if (brain_->neurons_.at(13)->potential()>0.4) turnLeft();
+  if (brain_->neurons_.at(14)->potential()>0.4) turnRight();
+  if (brain_->neurons_.at(15)->potential()>0.4) moveBackward();
 }
 //
 // void Creature::printBrain()

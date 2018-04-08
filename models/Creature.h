@@ -8,6 +8,7 @@
 
 
 #include "Plank.h"
+#include "Brain.h"
 #include "Entity.h"
 #include "TLine.h"
 
@@ -18,7 +19,7 @@ class Creature: public Entity
     typedef std::vector<double> Senses;
     typedef std::vector<Plank*> Planks;
 
-    // Brain *brain_;
+    Brain *brain_;
     std::string name_;
     TEllipse *left_eye, *right_eye;
     // TEllipse *visRange1_, *visRange2_, *visRange3_;
