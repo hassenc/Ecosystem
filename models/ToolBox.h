@@ -1,6 +1,8 @@
 #include "TMath.h"
 #include "TRandom3.h"
 
+#include <iostream>
+
 #ifndef __GCCXML__
 
 static const double pi=3.14159265358979;
@@ -16,13 +18,13 @@ inline double distance(double x1, double y1, double x2, double y2)
 }
 
 // Determinanat v1 (x1 y1) v2 (x2 y2) ?
-inline bool determinant(double x1, double y1, double x2, double y2)
+inline double determinant(double x1, double y1, double x2, double y2)
 {
   return x1*y2-x2*y1;
 }
 
 // Scalar Product v1 (x1 y1) v2 (x2 y2) ?
-inline bool scalar(double x1, double y1, double x2, double y2)
+inline double scalar(double x1, double y1, double x2, double y2)
 {
   return x1*x2+y1*y2;
 }
@@ -31,9 +33,12 @@ inline bool scalar(double x1, double y1, double x2, double y2)
 inline bool isOnSegment(double x, double y, double x1, double y1, double x2, double y2)
 {
   bool isOnSegment = false;
+  double epsilon = 400;
   //We check that determinant(ab,ac) = 0 && scalar(ca,cb)<0
-  isOnSegment = determinant(x2-x1, y2-y1, x-x1, y-y1) == 0 && scalar(x1-x, y1-y, x2-x, y2-y) <=0;
-  
+  // std::cout<<"determinant."<<determinant(x2-x1, y2-y1, x-x1, y-y1)<<std::endl;
+  // std::cout<<"scalar."<<scalar(x1-x, y1-y, x2-x, y2-y)<<std::endl;
+  isOnSegment = determinant(x2-x1, y2-y1, x-x1, y-y1) < epsilon && determinant(x2-x1, y2-y1, x-x1, y-y1) > -epsilon && scalar(x1-x, y1-y, x2-x, y2-y) <=0;
+  // std::cout<<"isOnSegment."<<isOnSegment<<std::endl;
   return isOnSegment;
 }
 

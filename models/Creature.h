@@ -20,7 +20,8 @@ class Creature: public Entity
 
     // Brain *brain_;
     std::string name_;
-    TEllipse *visRange1_, *visRange2_, *visRange3_;
+    TEllipse *left_eye, *right_eye;
+    // TEllipse *visRange1_, *visRange2_, *visRange3_;
     TLine *visPeriphery1_, *visPeriphery2_;
     double visualAngle_;
     double numberOfcaptors_;
@@ -29,6 +30,8 @@ class Creature: public Entity
     double worldSize_;
     int debug_;
     int kids_;
+    double eyeAngle_;
+    double eyeDistance_;
 
   public:
 
@@ -41,8 +44,8 @@ class Creature: public Entity
     void moveBackward();
     // void seeEntity(Entity *entity);
     bool isColliding(Plank *plank);
-    Senses getSenses(std::vector<Plank> planks);
-    double getNearestDistanceForAngle(std::vector<Plank> planks, double angle);
+    Senses getSenses(std::vector<Plank*> planks);
+    double getNearestDistanceForAngle(std::vector<Plank*> planks, double angle);
     // void seePlanks(std::vector<Plank*> *planks);
     // void seeCreatures(std::vector<Creature*> *creatures);
 

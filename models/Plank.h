@@ -24,7 +24,7 @@ class Plank: public Entity
 
   public:
 
-    Plank(std::string type, double x, double y, double theta, int bodyColor, double speed, std::string name, double worldSize, int debug = 1);
+    Plank(std::string type, double x, double y, double theta, int bodyColor, double speed, std::string name, double plankLength, double worldSize, int debug = 1);
 
     void draw();
     void moveForward();

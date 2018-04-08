@@ -10,7 +10,7 @@
 
 #include <iostream>
 
-Plank::Plank(std::string type, double x, double y, double theta, int bodyColor, double speed, std::string name, double worldSize, int debug): Entity(worldSize)
+Plank::Plank(std::string type, double x, double y, double theta, int bodyColor, double speed, std::string name, double length, double worldSize, int debug): Entity(worldSize)
 {
   debug_=debug;
   worldSize_=worldSize;
@@ -20,7 +20,7 @@ Plank::Plank(std::string type, double x, double y, double theta, int bodyColor, 
   speed_=speed;
   x_=x;
   y_=y;
-  length_=500.;
+  length_=length;
   theta_=theta;
   if (decodeDebug(debug_, 0)==1)
   {

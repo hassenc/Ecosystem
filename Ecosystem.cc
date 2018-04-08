@@ -34,10 +34,12 @@
 #include "models/ToolBox.h"
 #include "interface/CommandLineArguments.h"
 
-int timeStep=200;
-int nCreatures=1;
-int nPlanks=1;
-double worldSize=500;
+int timeStep=2000;
+int nCreatures=5;
+int nPlanks=2;
+double plankLength=200.;
+double worldSize=500.;
+double speed=2.0;
 
 int seed=90;
 
@@ -65,17 +67,18 @@ int main(int argc, char *argv[])
   typedef std::vector<Creature*> Creatures;
   typedef std::vector<Plank*> Planks;
   Creatures creatures;
+
   Planks planks;
   for (unsigned int i=0; i<nCreatures; ++i)
   {
     // Spped must be < 1 otherwise collision detection problem
-    Creature *creature=new Creature("Creature", r3->Rndm()*worldSize, r3->Rndm()*worldSize, r3->Rndm()*2.*pi, pi/4., 30, kBlue, 5.0, "Bot_"+itoa(i), worldSize, debug);
+    Creature *creature=new Creature("Creature", r3->Rndm()*worldSize, r3->Rndm()*worldSize, r3->Rndm()*2.*pi, pi/4., 30, kBlue, speed, "Bot_"+itoa(i), worldSize, debug);
     creatures.push_back(creature);
   }
   std::cout<<"Instantiated creatures."<<std::endl;
   for (unsigned int i=0; i<nPlanks; ++i)
   {
-    Plank *plank=new Plank("Plank", r3->Rndm()*worldSize, r3->Rndm()*worldSize, r3->Rndm()*2.*pi, kBlue, 5.0, "Plank_"+itoa(i), worldSize, debug);
+    Plank *plank=new Plank("Plank", r3->Rndm()*worldSize, r3->Rndm()*worldSize, r3->Rndm()*2.*pi, kBlue, speed, "Plank_"+itoa(i), plankLength, worldSize, debug);
     planks.push_back(plank);
   }
   std::cout<<"Instantiated planks."<<std::endl;
@@ -101,27 +104,43 @@ int main(int argc, char *argv[])
 
   int time=0;
   int dtime=0;
+
   std::cout<<"Starting."<<std::endl;
   // Time loop
-  while (time<2000)
+  while (true)
   {
-    // std::cout<<"Time: "<<time<<std::endl;
+    // std::cin>>dtime;
+    std::cout<<"--------------------------------------------: "<<time<<std::endl;
     ++time;
     ++dtime;
 
-    for (unsigned int i=0; i<creatures.size(); ++i)
-    {
-      // creatures.at(i)->seeFoods(&foods);
-      // creatures.at(i)->seeBots(&creatures);
-      // creatures.at(i)->seeBots(&predators);
+    for (unsigned int i=0; i<planks.size(); i++) {
       planks.at(i)->moveForward();
-      creatures.at(i)->moveForward();
-      creatures.at(i)->stepInTime();
-      bool isColliding = creatures.at(i)->isColliding(planks.at(i));
-      if (isColliding) {
-        std::cout<<"Collision."<<isColliding<<std::endl;
-      }
     }
+    if (!creatures.empty()) {
+      for (int i = creatures.size() - 1; i >= 0; i--)
+      {
+        // creatures.at(i)->seeFoods(&foods);
+        // creatures.at(i)->seeBots(&creatures);
+        // creatures.at(i)->seeBots(&predators);
+        creatures.at(i)->moveForward();
+        creatures.at(i)->stepInTime();
+        Creature::Senses senses = creatures.at(i)->getSenses(planks);
+
+        for (unsigned int j=0; j<planks.size(); j++) {
+          std::cout<<"i."<<i<<std::endl;
+          std::cout<<"j."<<j<<std::endl;
+          bool isColliding = creatures.at(i)->isColliding(planks.at(j));
+          if (isColliding) {
+            std::cout<<"Collision."<<isColliding<<std::endl;
+            delete *(creatures.begin() + i);
+            creatures.erase(creatures.begin() + i);
+            break;
+          }
+        }
+      }
+    }// end loop
+
 
     // Draw visualization
     if (true)
