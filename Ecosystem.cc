@@ -35,9 +35,9 @@
 #include "interface/CommandLineArguments.h"
 
 int timeStep=2000;
-int nCreatures=5;
-int nPlanks=2;
-double plankLength=200.;
+int nCreatures=100;
+int nPlanks=20;
+double plankLength=100.;
 double worldSize=500.;
 double speed=2.0;
 
@@ -104,64 +104,66 @@ int main(int argc, char *argv[])
 
   int time=0;
   int dtime=0;
+  int generation=0;
 
   std::cout<<"Starting."<<std::endl;
   // Time loop
-  while (true)
-  {
-    // std::cin>>dtime;
-    std::cout<<"--------------------------------------------: "<<time<<std::endl;
-    ++time;
-    ++dtime;
+  while (true) {
 
-    for (unsigned int i=0; i<planks.size(); i++) {
-      planks.at(i)->moveForward();
-    }
-    if (!creatures.empty()) {
-      for (int i = creatures.size() - 1; i >= 0; i--)
-      {
-        // creatures.at(i)->moveForward();
-        creatures.at(i)->stepInTime();
-        Creature::Senses senses = creatures.at(i)->getSenses(planks);
+    while (creatures.size() > 0) {
+      // std::cin>>dtime;
+      std::cout<<"--------------------------------------------: "<<time<<std::endl;
+      ++time;
+      ++dtime;
 
-        for (unsigned int j=0; j<planks.size(); j++) {
-          std::cout<<"i."<<i<<std::endl;
-          std::cout<<"j."<<j<<std::endl;
-          bool isColliding = creatures.at(i)->isColliding(planks.at(j));
-          if (isColliding) {
-            std::cout<<"Collision."<<isColliding<<std::endl;
-            delete *(creatures.begin() + i);
-            creatures.erase(creatures.begin() + i);
-            break;
+      for (unsigned int i=0; i<planks.size(); i++) {
+        planks.at(i)->moveForward();
+      }
+      if (!creatures.empty()) {
+        for (int i = creatures.size() - 1; i >= 0; i--) {
+          Creature::Senses senses = creatures.at(i)->getSenses(planks);
+          creatures.at(i)->think(senses);
+          creatures.at(i)->stepInTime();
+          for (unsigned int j=0; j<planks.size(); j++) {
+            bool isColliding = creatures.at(i)->isColliding(planks.at(j));
+            if (isColliding) {
+              std::cout<<"Collision."<<isColliding<<std::endl;
+              delete *(creatures.begin() + i);
+              creatures.erase(creatures.begin() + i);
+              break;
+            }
           }
         }
       }
-    }// end loop
 
+      if (generation%5 == 0)
+      {
+        c_World->cd();
+        for (unsigned int i=0; i<creatures.size(); ++i) creatures.at(i)->draw();
+        for (unsigned int i=0; i<planks.size(); ++i) planks.at(i)->draw();
+        text->Draw();
+        c_World->Update();
+        // c_World->SaveAs(("Movie/c_World_"+itoa(time)+".png").c_str());
+        // c_World->Print("Movie/Movie_basic.gif+");
+      }
+
+      // if (true)
+      // {
+      //
+      //   TGraph *g_dtime_time=new TGraph(dtime_vector.size(), &time_vector[0], &dtime_vector[0]);
+      //   g_dtime_time->SetName("g_dtime_time");
+      //   g_dtime_time->SetTitle("; time steps; Time to next meal");
+      //
+      //
+      //   delete g_dtime_time;
+      // }
+
+    }//end alive creatures : generation
+    generation++;
 
     // Draw visualization
-    if (true)
-    {
-      c_World->cd();
-      for (unsigned int i=0; i<creatures.size(); ++i) creatures.at(i)->draw();
-      for (unsigned int i=0; i<planks.size(); ++i) planks.at(i)->draw();
-      text->Draw();
-      c_World->Update();
-      // c_World->SaveAs(("Movie/c_World_"+itoa(time)+".png").c_str());
-      // c_World->Print("Movie/Movie_basic.gif+");
-    }
 
-    if (true)
-    {
-
-      TGraph *g_dtime_time=new TGraph(dtime_vector.size(), &time_vector[0], &dtime_vector[0]);
-      g_dtime_time->SetName("g_dtime_time");
-      g_dtime_time->SetTitle("; time steps; Time to next meal");
-
-
-      delete g_dtime_time;
-    }
-  }
+  }// end main loop
 
 
   delete text;

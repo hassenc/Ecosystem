@@ -11,6 +11,9 @@
 
 #include <iostream>
 
+double creature_size = 5.0;
+double eye_size = 2.0;
+
 Creature::Creature(std::string type, double x, double y, double theta, double visualAngle, int brainSize, int bodyColor, double speed, std::string name, double worldSize, int debug): Entity(worldSize)
 {
   debug_=debug;
@@ -18,10 +21,10 @@ Creature::Creature(std::string type, double x, double y, double theta, double vi
   type_=type;
   name_=name;
   bodyColor_=bodyColor;
-  numberOfcaptors_ = 1;
+  numberOfcaptors_ = 8;
   speed_=speed;
   eyeAngle_=pi/3;
-  eyeDistance_= 6.;
+  eyeDistance_= 3.;
   kids_=0;
   x_=x;
   y_=y;
@@ -30,13 +33,13 @@ Creature::Creature(std::string type, double x, double y, double theta, double vi
   brain_=new Brain(brainSize, debug_, name_);
   if (decodeDebug(debug_, 0)==1)
   {
-    circle_=new TEllipse(x, y, 10.);
+    circle_=new TEllipse(x, y, creature_size);
     circle_->SetLineColor(kBlack);
     circle_->SetFillColor(kWhite);
-    left_eye=new TEllipse(x + eyeDistance_*cos(theta_ - eyeAngle_), y + eyeDistance_*sin(theta_ - eyeAngle_), 4.0);
+    left_eye=new TEllipse(x + eyeDistance_*cos(theta_ - eyeAngle_), y + eyeDistance_*sin(theta_ - eyeAngle_), eye_size);
     left_eye->SetLineColor(kBlack);
     left_eye->SetFillColor(bodyColor_);
-    right_eye=new TEllipse(x + eyeDistance_*cos(theta_ + eyeAngle_), y + eyeDistance_*sin(theta_ + eyeAngle_), 4.0);
+    right_eye=new TEllipse(x + eyeDistance_*cos(theta_ + eyeAngle_), y + eyeDistance_*sin(theta_ + eyeAngle_), eye_size);
     right_eye->SetLineColor(kBlack);
     right_eye->SetFillColor(bodyColor_);
     // visRange1_=new TEllipse(x_, y_, 30, 30, 360.+(theta_-visualAngle_/2.)*180./pi, 360.+(theta_+visualAngle_/2.)*180./pi);
@@ -221,7 +224,7 @@ Creature::Senses Creature::getSenses(std::vector<Plank*> planks) {
     angle = pi * 2 / this->numberOfcaptors_;
     double res = this->getNearestDistanceForAngle(planks,  angle);
     double sens = 1 - res/ (worldSize_*sqrt(2));
-    std::cout<<"getSenses."<<sens<<std::endl;
+    // std::cout<<"getSenses."<<sens<<std::endl;
     senses.push_back(sens);
   }
   return senses;
@@ -340,13 +343,28 @@ double Creature::getNearestDistanceForAngle(std::vector<Plank*> planks, double a
 //   }
 // }
 
+void Creature::think(Senses senses)
+{
+  for (unsigned int i=0; i<this->numberOfcaptors_; ++i)
+  {
+    brain_->neurons_.at(i)->receive(senses.at(i));
+  }
+}
+
 void Creature::stepInTime()
 {
   brain_->stepInTime();
-  if (brain_->neurons_.at(12)->potential()>0.4) moveForward();
-  if (brain_->neurons_.at(13)->potential()>0.4) turnLeft();
-  if (brain_->neurons_.at(14)->potential()>0.4) turnRight();
-  if (brain_->neurons_.at(15)->potential()>0.4) moveBackward();
+  // brain_->print();
+  // if (brain_->neurons_.at(12)->potential()>0.4) moveForward();
+  if (brain_->neurons_.at(13)->potential()>0.4) {
+    turnLeft();
+    moveForward();
+  }
+  if (brain_->neurons_.at(14)->potential()>0.4) {
+    turnRight();
+    moveForward();
+  }
+  // if (brain_->neurons_.at(15)->potential()>0.4) moveBackward();
 }
 //
 // void Creature::printBrain()

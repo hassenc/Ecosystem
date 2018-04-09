@@ -50,6 +50,7 @@ class Creature: public Entity
     // void seePlanks(std::vector<Plank*> *planks);
     // void seeCreatures(std::vector<Creature*> *creatures);
 
+    void think(Senses senses);
     void stepInTime();
 
     void printBrain();
