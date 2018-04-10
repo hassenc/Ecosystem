@@ -36,11 +36,12 @@ class Creature: public Entity
 
   public:
 
-    Creature(std::string type, double x, double y, double theta, double visualAngle, int brainSize, int bodyColor, double speed, std::string name, double worldSize, int debug = 1);
-    Creature(Creature *parentCreature, double mu_newNeuron, double mu_newConnection, double mu_modConnection, double mu_visualAngle);
+    Creature(std::string type, double x, double y, double theta, int brainSize, int bodyColor, double speed, std::string name, double worldSize, int debug = 1);
+    Creature(Creature *parentCreature, double mu_newNeuron, double mu_newConnection, double mu_modConnection);
     ~Creature();
 
     void draw();
+    void deleteDraw();
     void moveForward();
     void moveBackward();
     // void seeEntity(Entity *entity);

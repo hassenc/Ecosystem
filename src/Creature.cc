@@ -13,15 +13,15 @@
 
 double creature_size = 5.0;
 double eye_size = 2.0;
+double numberOfcaptors_ = 8;
 
-Creature::Creature(std::string type, double x, double y, double theta, double visualAngle, int brainSize, int bodyColor, double speed, std::string name, double worldSize, int debug): Entity(worldSize)
+Creature::Creature(std::string type, double x, double y, double theta, int brainSize, int bodyColor, double speed, std::string name, double worldSize, int debug): Entity(worldSize)
 {
   debug_=debug;
   worldSize_=worldSize;
   type_=type;
   name_=name;
   bodyColor_=bodyColor;
-  numberOfcaptors_ = 8;
   speed_=speed;
   eyeAngle_=pi/3;
   eyeDistance_= 3.;
@@ -29,7 +29,7 @@ Creature::Creature(std::string type, double x, double y, double theta, double vi
   x_=x;
   y_=y;
   theta_=theta;
-  visualAngle_=visualAngle;
+  // visualAngle_=visualAngle;
   brain_=new Brain(brainSize, debug_, name_);
   if (decodeDebug(debug_, 0)==1)
   {
@@ -58,7 +58,7 @@ Creature::Creature(std::string type, double x, double y, double theta, double vi
   }
 }
 
-Creature::Creature(Creature *parentCreature, double mu_newNeuron, double mu_newConnection, double mu_modConnection, double mu_visualAngle): Entity(parentCreature->worldSize_)
+Creature::Creature(Creature *parentCreature, double mu_newNeuron, double mu_newConnection, double mu_modConnection): Entity(parentCreature->worldSize_)
 {
   ++(parentCreature->kids_);
   debug_=parentCreature->debug_;
@@ -67,16 +67,15 @@ Creature::Creature(Creature *parentCreature, double mu_newNeuron, double mu_newC
   name_=parentCreature->name_+"_"+itoa(parentCreature->kids_);
   bodyColor_=parentCreature->bodyColor_;
   speed_=parentCreature->speed_;
-  numberOfcaptors_ = 1;
   kids_=0;
   x_=parentCreature->x_;
   y_=parentCreature->y_;
   theta_=parentCreature->theta_;
   // std::cout<<"old visual angle = "<<visualAngle_<<std::endl;
-  visualAngle_=parentCreature->visualAngle_+mu_visualAngle*(-0.5+r3->Uniform());
+  // visualAngle_=parentCreature->visualAngle_+mu_visualAngle*(-0.5+r3->Uniform());
   // std::cout<<" new visual angle = "<<visualAngle_<<std::endl;
-  if (visualAngle_<0) visualAngle_=0;
-  if (visualAngle_>pi) visualAngle_=pi;
+  // if (visualAngle_<0) visualAngle_=0;
+  // if (visualAngle_>pi) visualAngle_=pi;
   if (decodeDebug(debug_, 0)==1)
   {
     circle_=new TEllipse(x_, y_, 50., 50.);
@@ -118,6 +117,16 @@ Creature::~Creature()
     // visPeriphery2_->Delete();
   }
   // delete brain_;
+}
+
+void Creature::deleteDraw()
+{
+  if (decodeDebug(debug_, 0)==1)
+  {
+    circle_->Delete();
+    left_eye->Delete();
+    right_eye->Delete();
+  }
 }
 
 void Creature::draw()

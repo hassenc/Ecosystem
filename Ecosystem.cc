@@ -51,6 +51,11 @@ int seed=90;
 // bit 3 = Draw the histograms
 int debug = 0x2;
 
+// Mutation parameters
+double mu_newNeuron=0; // 0.001;
+double mu_newConnection=0.05;
+double mu_modConnection=0.05;
+
 int main(int argc, char *argv[])
 {
   std::map<std::string, int> cmdMap=commandLineArguments(argc, argv);
@@ -72,7 +77,7 @@ int main(int argc, char *argv[])
   for (unsigned int i=0; i<nCreatures; ++i)
   {
     // Spped must be < 1 otherwise collision detection problem
-    Creature *creature=new Creature("Creature", r3->Rndm()*worldSize, r3->Rndm()*worldSize, r3->Rndm()*2.*pi, pi/4., 30, kBlue, speed, "Bot_"+itoa(i), worldSize, debug);
+    Creature *creature=new Creature("Creature", r3->Rndm()*worldSize, r3->Rndm()*worldSize, r3->Rndm()*2.*pi, 30, kBlue, speed, "Bot_"+itoa(i), worldSize, debug);
     creatures.push_back(creature);
   }
   std::cout<<"Instantiated creatures."<<std::endl;
@@ -108,11 +113,13 @@ int main(int argc, char *argv[])
 
   std::cout<<"Starting."<<std::endl;
   // Time loop
-  while (true) {
-
-    while (creatures.size() > 0) {
+  while (generation<100) {
+    std::cout<<"Generation: "<<generation<<std::endl;
+    std::cout<<"Start generation with: creatures "<<creatures.size()<<std::endl;
+    std::cout<<"max creatures "<<nCreatures*0.3<<std::endl;
+    while (creatures.size() > nCreatures*0.3) {
       // std::cin>>dtime;
-      std::cout<<"--------------------------------------------: "<<time<<std::endl;
+      // std::cout<<"--------------------------------------------: "<<time<<std::endl;
       ++time;
       ++dtime;
 
@@ -127,16 +134,21 @@ int main(int argc, char *argv[])
           for (unsigned int j=0; j<planks.size(); j++) {
             bool isColliding = creatures.at(i)->isColliding(planks.at(j));
             if (isColliding) {
-              std::cout<<"Collision."<<isColliding<<std::endl;
-              delete *(creatures.begin() + i);
+              std::cout<<"Collision for creature "<<i<<std::endl;
+
+              // delete *(creatures.begin() + i);
+              creatures.at(i)->deleteDraw();
               creatures.erase(creatures.begin() + i);
+              std::cout<<"erased creature "<<i<<std::endl;
+              std::cout<<"after collision : creatures "<<creatures.size()<<std::endl;
               break;
             }
           }
         }
       }
 
-      if (generation%5 == 0)
+      // if (generation%5 == 0)
+      if (true)
       {
         c_World->cd();
         for (unsigned int i=0; i<creatures.size(); ++i) creatures.at(i)->draw();
@@ -157,9 +169,20 @@ int main(int argc, char *argv[])
       //
       //   delete g_dtime_time;
       // }
-
     }//end alive creatures : generation
     generation++;
+    // std::cout<<"creatures "<<creatures.size()<<std::endl;
+    for (unsigned int i=0 ; i<70 ; ++i) {
+      Creature *creature=new Creature(creatures.at(i%30), mu_newNeuron, mu_newConnection, mu_modConnection);
+      creatures.push_back(creature);
+    }
+    // creatures.resize(100);
+    std::cout<<"create new creatures "<<creatures.size()<<std::endl;
+    for (unsigned int i=0; i<creatures.size(); ++i) {
+      std::cout<<"draw new creature "<<i<<std::endl;
+      creatures.at(i)->draw();
+    };
+
 
     // Draw visualization
 
