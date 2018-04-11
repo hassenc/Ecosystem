@@ -21,6 +21,10 @@ class Plank: public Entity
     double speed_;
     double worldSize_;
     int debug_;
+    int x1_;
+    int y1_;
+    int x2_;
+    int y2_;
 
   public:
 

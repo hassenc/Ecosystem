@@ -50,10 +50,10 @@ void Plank::draw()
   {
     circle_->SetX1(x_);
     circle_->SetY1(y_);
-    line_->SetX1(x_-(length_/2.)*cos(pi/2-theta_));
-    line_->SetY1(y_+(length_/2.)*sin(pi/2-theta_));
-    line_->SetX2(x_+(length_/2.)*cos(pi/2-theta_));
-    line_->SetY2(y_-(length_/2.)*sin(pi/2-theta_));
+    line_->SetX1(x1_);
+    line_->SetY1(y1_);
+    line_->SetX2(x2_);
+    line_->SetY2(y2_);
     // double angle1=360.+(theta_-visualAngle_/2.)*180./pi;`
     // double angle2=360.+(theta_+visualAngle_/2.)*180./pi;`
     // visRange1_->SetX1(x_);
@@ -91,5 +91,9 @@ void Plank::moveForward()
 {
   x_=x_+speed_*cos(theta_);
   y_=y_+speed_*sin(theta_);
+  x1_=x_-(length_/2.)*cos(pi/2-theta_);
+  y1_=y_+(length_/2.)*sin(pi/2-theta_);
+  x2_=x_+(length_/2.)*cos(pi/2-theta_);
+  y2_=y_-(length_/2.)*sin(pi/2-theta_);
   bouncyBoundaries();
 }

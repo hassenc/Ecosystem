@@ -39,7 +39,7 @@ int nCreatures=100;
 int nPlanks=20;
 double plankLength=100.;
 double worldSize=500.;
-double speed=2.0;
+double speed=3.0;
 
 int seed=90;
 
@@ -77,13 +77,13 @@ int main(int argc, char *argv[])
   for (unsigned int i=0; i<nCreatures; ++i)
   {
     // Spped must be < 1 otherwise collision detection problem
-    Creature *creature=new Creature("Creature", r3->Rndm()*worldSize, r3->Rndm()*worldSize, r3->Rndm()*2.*pi, 30, kBlue, speed, "Bot_"+itoa(i), worldSize, debug);
+    Creature *creature=new Creature("Creature", r3->Rndm()*worldSize, r3->Rndm()*worldSize, r3->Rndm()*2.*pi, 30, kBlue, 1., "Bot_"+itoa(i), worldSize, debug);
     creatures.push_back(creature);
   }
   std::cout<<"Instantiated creatures."<<std::endl;
   for (unsigned int i=0; i<nPlanks; ++i)
   {
-    Plank *plank=new Plank("Plank", r3->Rndm()*worldSize, r3->Rndm()*worldSize, r3->Rndm()*2.*pi, kBlue, speed, "Plank_"+itoa(i), plankLength, worldSize, debug);
+    Plank *plank=new Plank("Plank", r3->Rndm()*worldSize, r3->Rndm()*worldSize, r3->Rndm()*2.*pi, kBlue, 1.0, "Plank_"+itoa(i), plankLength, worldSize, debug);
     planks.push_back(plank);
   }
   std::cout<<"Instantiated planks."<<std::endl;
@@ -110,18 +110,29 @@ int main(int argc, char *argv[])
   int time=0;
   int dtime=0;
   int generation=0;
+  int max_generation=300;
 
   std::cout<<"Starting."<<std::endl;
   // Time loop
-  while (generation<100) {
+  while (generation<=max_generation) {
     std::cout<<"Generation: "<<generation<<std::endl;
     std::cout<<"Start generation with: creatures "<<creatures.size()<<std::endl;
     std::cout<<"max creatures "<<nCreatures*0.3<<std::endl;
-    while (creatures.size() > nCreatures*0.3) {
+    bool stop_condition = creatures.size() <= nCreatures*0.3;
+    while (!stop_condition ||  generation == max_generation) { //generation
       // std::cin>>dtime;
       // std::cout<<"--------------------------------------------: "<<time<<std::endl;
       ++time;
       ++dtime;
+
+      if (generation == max_generation) {
+        c_World->cd();
+        for (unsigned int i=0; i<creatures.size(); ++i) creatures.at(i)->draw();
+        for (unsigned int i=0; i<planks.size(); ++i) planks.at(i)->draw();
+        text->SetText(0.01, 0.01, ("Generation "+itoa(generation)).c_str());
+        text->Draw();
+        c_World->Update();
+      }
 
       for (unsigned int i=0; i<planks.size(); i++) {
         planks.at(i)->moveForward();
@@ -131,33 +142,26 @@ int main(int argc, char *argv[])
           Creature::Senses senses = creatures.at(i)->getSenses(planks);
           creatures.at(i)->think(senses);
           creatures.at(i)->stepInTime();
+
+          // creatures.at(i)->deleteDraw();
           for (unsigned int j=0; j<planks.size(); j++) {
             bool isColliding = creatures.at(i)->isColliding(planks.at(j));
             if (isColliding) {
-              std::cout<<"Collision for creature "<<i<<std::endl;
-
-              // delete *(creatures.begin() + i);
-              creatures.at(i)->deleteDraw();
+              // std::cout<<"Collision for creature "<<i<<std::endl;
+              delete *(creatures.begin() + i);
+              // creatures.at(i)->deleteDraw();
               creatures.erase(creatures.begin() + i);
-              std::cout<<"erased creature "<<i<<std::endl;
-              std::cout<<"after collision : creatures "<<creatures.size()<<std::endl;
               break;
             }
+          }
+          stop_condition = creatures.size() <= nCreatures*0.3;
+          if (stop_condition && generation!=max_generation) {
+            break;
           }
         }
       }
 
-      // if (generation%5 == 0)
-      if (true)
-      {
-        c_World->cd();
-        for (unsigned int i=0; i<creatures.size(); ++i) creatures.at(i)->draw();
-        for (unsigned int i=0; i<planks.size(); ++i) planks.at(i)->draw();
-        text->Draw();
-        c_World->Update();
-        // c_World->SaveAs(("Movie/c_World_"+itoa(time)+".png").c_str());
-        // c_World->Print("Movie/Movie_basic.gif+");
-      }
+
 
       // if (true)
       // {
@@ -176,12 +180,6 @@ int main(int argc, char *argv[])
       Creature *creature=new Creature(creatures.at(i%30), mu_newNeuron, mu_newConnection, mu_modConnection);
       creatures.push_back(creature);
     }
-    // creatures.resize(100);
-    std::cout<<"create new creatures "<<creatures.size()<<std::endl;
-    for (unsigned int i=0; i<creatures.size(); ++i) {
-      std::cout<<"draw new creature "<<i<<std::endl;
-      creatures.at(i)->draw();
-    };
 
 
     // Draw visualization

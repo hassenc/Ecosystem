@@ -25,7 +25,6 @@ class Creature: public Entity
     // TEllipse *visRange1_, *visRange2_, *visRange3_;
     TLine *visPeriphery1_, *visPeriphery2_;
     double visualAngle_;
-    double numberOfcaptors_;
     int bodyColor_;
     double speed_;
     double worldSize_;
@@ -33,6 +32,7 @@ class Creature: public Entity
     int kids_;
     double eyeAngle_;
     double eyeDistance_;
+    double numberOfcaptors_;
 
   public:
 

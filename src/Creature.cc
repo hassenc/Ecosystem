@@ -13,7 +13,9 @@
 
 double creature_size = 5.0;
 double eye_size = 2.0;
-double numberOfcaptors_ = 8;
+double numberOfcaptors = 8;
+double eyeAngle=pi/3;
+double eyeDistance= 3.;
 
 Creature::Creature(std::string type, double x, double y, double theta, int brainSize, int bodyColor, double speed, std::string name, double worldSize, int debug): Entity(worldSize)
 {
@@ -23,23 +25,24 @@ Creature::Creature(std::string type, double x, double y, double theta, int brain
   name_=name;
   bodyColor_=bodyColor;
   speed_=speed;
-  eyeAngle_=pi/3;
-  eyeDistance_= 3.;
   kids_=0;
   x_=x;
   y_=y;
   theta_=theta;
+  numberOfcaptors_ = numberOfcaptors;
+  eyeAngle_ = eyeAngle;
+  eyeDistance_ = eyeDistance;
   // visualAngle_=visualAngle;
   brain_=new Brain(brainSize, debug_, name_);
   if (decodeDebug(debug_, 0)==1)
   {
-    circle_=new TEllipse(x, y, creature_size);
+    circle_=new TEllipse(x_, y_, creature_size);
     circle_->SetLineColor(kBlack);
     circle_->SetFillColor(kWhite);
-    left_eye=new TEllipse(x + eyeDistance_*cos(theta_ - eyeAngle_), y + eyeDistance_*sin(theta_ - eyeAngle_), eye_size);
+    left_eye=new TEllipse(x_ + eyeDistance_*cos(theta_ - eyeAngle_), y_ + eyeDistance_*sin(theta_ - eyeAngle_), eye_size);
     left_eye->SetLineColor(kBlack);
     left_eye->SetFillColor(bodyColor_);
-    right_eye=new TEllipse(x + eyeDistance_*cos(theta_ + eyeAngle_), y + eyeDistance_*sin(theta_ + eyeAngle_), eye_size);
+    right_eye=new TEllipse(x_ + eyeDistance_*cos(theta_ + eyeAngle_), y_ + eyeDistance_*sin(theta_ + eyeAngle_), eye_size);
     right_eye->SetLineColor(kBlack);
     right_eye->SetFillColor(bodyColor_);
     // visRange1_=new TEllipse(x_, y_, 30, 30, 360.+(theta_-visualAngle_/2.)*180./pi, 360.+(theta_+visualAngle_/2.)*180./pi);
@@ -67,9 +70,12 @@ Creature::Creature(Creature *parentCreature, double mu_newNeuron, double mu_newC
   name_=parentCreature->name_+"_"+itoa(parentCreature->kids_);
   bodyColor_=parentCreature->bodyColor_;
   speed_=parentCreature->speed_;
+  numberOfcaptors_ = numberOfcaptors;
+  eyeAngle_ = eyeAngle;
+  eyeDistance_ = eyeDistance;
   kids_=0;
-  x_=parentCreature->x_;
-  y_=parentCreature->y_;
+  x_=r3->Rndm()*parentCreature->worldSize_;
+  y_=r3->Rndm()*parentCreature->worldSize_;
   theta_=parentCreature->theta_;
   // std::cout<<"old visual angle = "<<visualAngle_<<std::endl;
   // visualAngle_=parentCreature->visualAngle_+mu_visualAngle*(-0.5+r3->Uniform());
@@ -78,9 +84,15 @@ Creature::Creature(Creature *parentCreature, double mu_newNeuron, double mu_newC
   // if (visualAngle_>pi) visualAngle_=pi;
   if (decodeDebug(debug_, 0)==1)
   {
-    circle_=new TEllipse(x_, y_, 50., 50.);
+    circle_=new TEllipse(x_, y_, creature_size);
     circle_->SetLineColor(kBlack);
-    circle_->SetFillColor(bodyColor_);
+    circle_->SetFillColor(kWhite);
+    left_eye=new TEllipse(x_ + eyeDistance_*cos(theta_ - eyeAngle_), y_ + eyeDistance_*sin(theta_ - eyeAngle_), eye_size);
+    left_eye->SetLineColor(kBlack);
+    left_eye->SetFillColor(bodyColor_);
+    right_eye=new TEllipse(x_ + eyeDistance_*cos(theta_ + eyeAngle_), y_ + eyeDistance_*sin(theta_ + eyeAngle_), eye_size);
+    right_eye->SetLineColor(kBlack);
+    right_eye->SetFillColor(bodyColor_);
     // visRange1_=new TEllipse(x_, y_, 30, 30, 360.+(theta_-visualAngle_/2.)*180./pi, 360.+(theta_+visualAngle_/2.)*180./pi);
     // visRange2_=new TEllipse(x_, y_, 60, 60, 360.+(theta_-visualAngle_/2.)*180./pi, 360.+(theta_+visualAngle_/2.)*180./pi);
     // visRange3_=new TEllipse(x_, y_, 100, 100, 360.+(theta_-visualAngle_/2.)*180./pi, 360.+(theta_+visualAngle_/2.)*180./pi);
@@ -210,12 +222,12 @@ bool Creature::isColliding(Plank *plank)
   double distance_to_plank_center;
   double max_distance_to_line;
   double max_distance_to_plank_center;
-  x1 = plank->line_->GetX1();
-  y1 = plank->line_->GetY1();
-  x2 = plank->line_->GetX2();
-  y2 = plank->line_->GetY2();
-  x0 = this->circle_->GetX1();
-  y0 = this->circle_->GetY1();
+  x1 = plank->x1_;
+  y1 = plank->y1_;
+  x2 = plank->x2_;
+  y2 = plank->y2_;
+  x0 = this->x_;
+  y0 = this->y_;
   distance_to_plank = fabs((y2-y1)*x0-(x2-x1)*y0+x2*y1-y2*x1)/distance(x1,y1,x2,y2); // this is the distance from point to line
   max_distance_to_line = (plank->speed_ + this->speed_)/2; // if line and plank are going toward each other, they get closer by the sum of speeds every step
   max_distance_to_plank_center = sqrt(pow(max_distance_to_line,2) + pow(plank->length_/2,2)); //max distance when going toward each other and point is at the edge of the plank
@@ -236,6 +248,7 @@ Creature::Senses Creature::getSenses(std::vector<Plank*> planks) {
     // std::cout<<"getSenses."<<sens<<std::endl;
     senses.push_back(sens);
   }
+  // std::cout<<"getSenses "<<senses<<std::endl;
   return senses;
 }
 
@@ -256,7 +269,7 @@ double Creature::getNearestDistanceForAngle(std::vector<Plank*> planks, double a
     // TEllipse *circle =new TEllipse(x, y, 0.1);
     //TODO test if x,y is on segment by looping on segments here
     for (unsigned int i=0; i<planks.size(); ++i) {
-      if (isOnSegment(x,y, planks.at(i)->line_->GetX1(), planks.at(i)->line_->GetY1(), planks.at(i)->line_->GetX2(), planks.at(i)->line_->GetY2())) {
+      if (isOnSegment(x,y, planks.at(i)->x1_, planks.at(i)->y1_, planks.at(i)->x2_, planks.at(i)->y2_)) {
         dist = distance(this->x_ , this->y_, x, y);
         break;
       };
