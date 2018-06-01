@@ -22,7 +22,7 @@ TRandom3 *r3=new TRandom3();
 
 Neuron::Neuron()
 {
-  activationThreshold_=0.4;
+  activationThreshold_=0.01;
   synapticReinforcement_=0.8;
   synapticDecay_=0.999; // 0.999
   potentialDecay_=0.99; // 0.9
@@ -55,6 +55,7 @@ void Neuron::stepInTime1(Neurons *neurons)
       Neuron *targetNeuron=neurons->at(neuralRelations_.at(i)->index);
       double synapticStrength=neuralRelations_.at(i)->synapticStrength;
       targetNeuron->receive(0.5*(synapticStrength/totalSynapticWeight)*(neuralRelations_.at(i)->distance));
+      // targetNeuron->receive(1);
       neuralRelations_.at(i)->synapticStrength=synapticStrength+synapticReinforcement_*(1.-synapticStrength);
     }
     potential_=0; // -0.01;

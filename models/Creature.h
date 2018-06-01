@@ -33,6 +33,8 @@ class Creature: public Entity
     double eyeAngle_;
     double eyeDistance_;
     double numberOfcaptors_;
+    bool bonus_watcher_left_;
+    bool bonus_watcher_right_;
 
   public:
 

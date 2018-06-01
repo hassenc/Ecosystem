@@ -35,13 +35,16 @@
 #include "interface/CommandLineArguments.h"
 
 int timeStep=2000;
-int nCreatures=100;
-int nPlanks=20;
-double plankLength=100.;
+int nCreatures=300;
+int nPlanks=12;
+double plankLength=300.;
 double worldSize=500.;
-double speed=3.0;
+double speed=5.0;
+int max_generation=40;
+double percent_kept=0.1;
+double brain_size=30;
 
-int seed=90;
+int seed=130;
 
 // Debug Levels
 // bits: xxxx
@@ -77,7 +80,7 @@ int main(int argc, char *argv[])
   for (unsigned int i=0; i<nCreatures; ++i)
   {
     // Spped must be < 1 otherwise collision detection problem
-    Creature *creature=new Creature("Creature", r3->Rndm()*worldSize, r3->Rndm()*worldSize, r3->Rndm()*2.*pi, 30, kBlue, 1., "Bot_"+itoa(i), worldSize, debug);
+    Creature *creature=new Creature("Creature", (worldSize/4 + r3->Rndm()*worldSize/2), (worldSize/4 + r3->Rndm()*worldSize/2), r3->Rndm()*2.*pi, brain_size, kBlue, 1., "Bot_"+itoa(i), worldSize, debug);
     creatures.push_back(creature);
   }
   std::cout<<"Instantiated creatures."<<std::endl;
@@ -110,15 +113,15 @@ int main(int argc, char *argv[])
   int time=0;
   int dtime=0;
   int generation=0;
-  int max_generation=300;
+
 
   std::cout<<"Starting."<<std::endl;
   // Time loop
   while (generation<=max_generation) {
     std::cout<<"Generation: "<<generation<<std::endl;
     std::cout<<"Start generation with: creatures "<<creatures.size()<<std::endl;
-    std::cout<<"max creatures "<<nCreatures*0.3<<std::endl;
-    bool stop_condition = creatures.size() <= nCreatures*0.3;
+    std::cout<<"max creatures "<<nCreatures*percent_kept<<std::endl;
+    bool stop_condition = creatures.size() <= nCreatures*percent_kept;
     while (!stop_condition ||  generation == max_generation) { //generation
       // std::cin>>dtime;
       // std::cout<<"--------------------------------------------: "<<time<<std::endl;
@@ -154,7 +157,7 @@ int main(int argc, char *argv[])
               break;
             }
           }
-          stop_condition = creatures.size() <= nCreatures*0.3;
+          stop_condition = creatures.size() <= nCreatures*percent_kept;
           if (stop_condition && generation!=max_generation) {
             break;
           }
@@ -176,8 +179,8 @@ int main(int argc, char *argv[])
     }//end alive creatures : generation
     generation++;
     // std::cout<<"creatures "<<creatures.size()<<std::endl;
-    for (unsigned int i=0 ; i<70 ; ++i) {
-      Creature *creature=new Creature(creatures.at(i%30), mu_newNeuron, mu_newConnection, mu_modConnection);
+    for (unsigned int i=0 ; i<(nCreatures-percent_kept*nCreatures) ; ++i) {
+      Creature *creature=new Creature(creatures.at(i% int(percent_kept*nCreatures)), mu_newNeuron, mu_newConnection, mu_modConnection);
       creatures.push_back(creature);
     }
 

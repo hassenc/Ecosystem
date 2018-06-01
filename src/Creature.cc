@@ -17,6 +17,9 @@ double numberOfcaptors = 8;
 double eyeAngle=pi/3;
 double eyeDistance= 3.;
 
+bool bonus_watcher_left= false;
+bool bonus_watcher_left= false;
+
 Creature::Creature(std::string type, double x, double y, double theta, int brainSize, int bodyColor, double speed, std::string name, double worldSize, int debug): Entity(worldSize)
 {
   debug_=debug;
@@ -32,6 +35,8 @@ Creature::Creature(std::string type, double x, double y, double theta, int brain
   numberOfcaptors_ = numberOfcaptors;
   eyeAngle_ = eyeAngle;
   eyeDistance_ = eyeDistance;
+  bonus_watcher_left_ = false;
+  bonus_watcher_right_ = false;
   // visualAngle_=visualAngle;
   brain_=new Brain(brainSize, debug_, name_);
   if (decodeDebug(debug_, 0)==1)
@@ -74,9 +79,12 @@ Creature::Creature(Creature *parentCreature, double mu_newNeuron, double mu_newC
   eyeAngle_ = eyeAngle;
   eyeDistance_ = eyeDistance;
   kids_=0;
-  x_=r3->Rndm()*parentCreature->worldSize_;
-  y_=r3->Rndm()*parentCreature->worldSize_;
+  x_=worldSize_/4 + r3->Rndm()*parentCreature->worldSize_/2;
+  y_=worldSize_/4 + r3->Rndm()*parentCreature->worldSize_/2;
   theta_=parentCreature->theta_;
+
+  bonus_watcher_left_ = false;
+  bonus_watcher_right_ = false;
   // std::cout<<"old visual angle = "<<visualAngle_<<std::endl;
   // visualAngle_=parentCreature->visualAngle_+mu_visualAngle*(-0.5+r3->Uniform());
   // std::cout<<" new visual angle = "<<visualAngle_<<std::endl;
@@ -240,11 +248,18 @@ Creature::Senses Creature::getSenses(std::vector<Plank*> planks) {
   // Creature::Senses senses;
   std::vector<double> senses;
   double angle;
+  double sens = 0;
   for (unsigned int i=0; i<this->numberOfcaptors_; ++i)
   {
     angle = pi * 2 / this->numberOfcaptors_;
     double res = this->getNearestDistanceForAngle(planks,  angle);
-    double sens = 1 - res/ (worldSize_*sqrt(2));
+    if (res < (worldSize_/8)) {
+      sens = 1;
+    } else {
+      sens = 0;
+    }
+    // double sens = 1 - res/ (worldSize_*sqrt(2));
+
     // std::cout<<"getSenses."<<sens<<std::endl;
     senses.push_back(sens);
   }
@@ -378,11 +393,15 @@ void Creature::stepInTime()
   brain_->stepInTime();
   // brain_->print();
   // if (brain_->neurons_.at(12)->potential()>0.4) moveForward();
-  if (brain_->neurons_.at(13)->potential()>0.4) {
+  // std::cout<<" at 14 = "<<brain_->neurons_.at(13)->potential()<<std::endl;
+  // std::cout<<" at 15 = "<<brain_->neurons_.at(14)->potential()<<std::endl;
+  if (brain_->neurons_.at(9)->potential()>0.35) {
+    bonus_watcher_left = true;
     turnLeft();
     moveForward();
   }
-  if (brain_->neurons_.at(14)->potential()>0.4) {
+  if (brain_->neurons_.at(10)->potential()>0.35) {
+    bonus_watcher_right = true;
     turnRight();
     moveForward();
   }
