@@ -17,8 +17,8 @@ double numberOfcaptors = 8;
 double eyeAngle=pi/3;
 double eyeDistance= 3.;
 
-bool bonus_watcher_left= false;
-bool bonus_watcher_left= false;
+bool bonus_watcher_left_= false;
+bool bonus_watcher_right_= false;
 
 Creature::Creature(std::string type, double x, double y, double theta, int brainSize, int bodyColor, double speed, std::string name, double worldSize, int debug): Entity(worldSize)
 {
@@ -258,7 +258,7 @@ Creature::Senses Creature::getSenses(std::vector<Plank*> planks) {
     } else {
       sens = 0;
     }
-    // double sens = 1 - res/ (worldSize_*sqrt(2));
+    // sens = 1 - res/ (worldSize_*sqrt(2));
 
     // std::cout<<"getSenses."<<sens<<std::endl;
     senses.push_back(sens);
@@ -395,13 +395,13 @@ void Creature::stepInTime()
   // if (brain_->neurons_.at(12)->potential()>0.4) moveForward();
   // std::cout<<" at 14 = "<<brain_->neurons_.at(13)->potential()<<std::endl;
   // std::cout<<" at 15 = "<<brain_->neurons_.at(14)->potential()<<std::endl;
-  if (brain_->neurons_.at(9)->potential()>0.35) {
-    bonus_watcher_left = true;
+  if (brain_->neurons_.at(13)->potential()>0.35) {
+    bonus_watcher_left_ = true;
     turnLeft();
     moveForward();
   }
-  if (brain_->neurons_.at(10)->potential()>0.35) {
-    bonus_watcher_right = true;
+  if (brain_->neurons_.at(14)->potential()>0.35) {
+    bonus_watcher_right_ = true;
     turnRight();
     moveForward();
   }

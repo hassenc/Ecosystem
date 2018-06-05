@@ -5,4 +5,5 @@
 #  bit 2 = Fill histograms
 #  bit 3 = Draw the histograms
 
-./BrainInWorld -debug 1 -skipGenerations 100 -timeStep 200 -worldSize 500 -nBots 10 -nFoods 5 -nPredators 0
+./Ecosystem -debug 1
+# ./Ecosystem -debug 1 -skipGenerations 100 -timeStep 200 -worldSize 500 -nBots 10 -nFoods 5 -nPredators 0

@@ -117,18 +117,19 @@ int main(int argc, char *argv[])
 
   std::cout<<"Starting."<<std::endl;
   // Time loop
-  while (generation<=max_generation) {
+  // while (generation<=max_generation) {
+  while (true) {
     std::cout<<"Generation: "<<generation<<std::endl;
     std::cout<<"Start generation with: creatures "<<creatures.size()<<std::endl;
     std::cout<<"max creatures "<<nCreatures*percent_kept<<std::endl;
-    bool stop_condition = creatures.size() <= nCreatures*percent_kept;
-    while (!stop_condition ||  generation == max_generation) { //generation
+    // bool stop_condition = creatures.size() <= nCreatures*percent_kept;
+    // while (!stop_condition ||  generation == max_generation) { //generation
       // std::cin>>dtime;
       // std::cout<<"--------------------------------------------: "<<time<<std::endl;
       ++time;
       ++dtime;
 
-      if (generation == max_generation) {
+      if (generation > 10000) {
         c_World->cd();
         for (unsigned int i=0; i<creatures.size(); ++i) creatures.at(i)->draw();
         for (unsigned int i=0; i<planks.size(); ++i) planks.at(i)->draw();
@@ -154,13 +155,17 @@ int main(int argc, char *argv[])
               delete *(creatures.begin() + i);
               // creatures.at(i)->deleteDraw();
               creatures.erase(creatures.begin() + i);
+
+              Creature *creature=new Creature(creatures.at(0), mu_newNeuron, mu_newConnection, mu_modConnection);
+              creatures.push_back(creature);
+              generation++;
               break;
             }
           }
-          stop_condition = creatures.size() <= nCreatures*percent_kept;
-          if (stop_condition && generation!=max_generation) {
-            break;
-          }
+          // stop_condition = creatures.size() <= nCreatures*percent_kept;
+          // if (stop_condition && generation!=max_generation) {
+          //   break;
+          // }
         }
       }
 
@@ -176,13 +181,13 @@ int main(int argc, char *argv[])
       //
       //   delete g_dtime_time;
       // }
-    }//end alive creatures : generation
-    generation++;
+    // }//end alive creatures : generation
+
     // std::cout<<"creatures "<<creatures.size()<<std::endl;
-    for (unsigned int i=0 ; i<(nCreatures-percent_kept*nCreatures) ; ++i) {
-      Creature *creature=new Creature(creatures.at(i% int(percent_kept*nCreatures)), mu_newNeuron, mu_newConnection, mu_modConnection);
-      creatures.push_back(creature);
-    }
+    // for (unsigned int i=0 ; i<(nCreatures-percent_kept*nCreatures) ; ++i) {
+    //   Creature *creature=new Creature(creatures.at(i% int(percent_kept*nCreatures)), mu_newNeuron, mu_newConnection, mu_modConnection);
+    //   creatures.push_back(creature);
+    // }
 
 
     // Draw visualization
