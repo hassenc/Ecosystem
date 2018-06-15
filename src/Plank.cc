@@ -95,5 +95,5 @@ void Plank::moveForward()
   y1_=y_+(length_/2.)*sin(pi/2-theta_);
   x2_=x_+(length_/2.)*cos(pi/2-theta_);
   y2_=y_-(length_/2.)*sin(pi/2-theta_);
-  bouncyBoundaries();
+  circularBoundaries();
 }

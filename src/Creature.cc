@@ -165,6 +165,11 @@ void Creature::draw()
     right_eye->Draw();
   }
 }
+
+void Creature::setColor(int color)
+{
+  circle_->SetFillColor(color);
+}
 // void Creature::draw()
 // {
 //   if (decodeDebug(debug_, 0)==1)
@@ -207,7 +212,8 @@ void Creature::moveForward()
 {
   x_=x_+speed_*cos(theta_);
   y_=y_+speed_*sin(theta_);
-  bouncyBoundaries();
+  // bouncyBoundaries();
+  circularBoundaries();
 }
 
 void Creature::moveBackward()
@@ -251,19 +257,27 @@ Creature::Senses Creature::getSenses(std::vector<Plank*> planks) {
   double sens = 0;
   for (unsigned int i=0; i<this->numberOfcaptors_; ++i)
   {
-    angle = pi * 2 / this->numberOfcaptors_;
-    double res = this->getNearestDistanceForAngle(planks,  angle);
-    if (res < (worldSize_/8)) {
-      sens = 1;
-    } else {
-      sens = 0;
-    }
-    // sens = 1 - res/ (worldSize_*sqrt(2));
 
-    // std::cout<<"getSenses."<<sens<<std::endl;
+    angle = i * pi * 2 / this->numberOfcaptors_;
+    double res = this->getNearestDistanceForAngle(planks,  angle);
+    sens = 1 - (res/ (worldSize_*sqrt(2)))*2;
+    // if (res < (worldSize_/2)) {
+    //   // sens = 1;
+    // } else {
+    //   sens = -1;
+    // }
     senses.push_back(sens);
   }
-  // std::cout<<"getSenses "<<senses<<std::endl;
+  // std::cout<<"----------------"<<std::endl;
+  // std::cout<<"getSenses."<<senses.at(0)<<std::endl;
+  // std::cout<<"getSenses."<<senses.at(1)<<std::endl;
+  // std::cout<<"getSenses."<<senses.at(2)<<std::endl;
+  // std::cout<<"getSenses."<<senses.at(3)<<std::endl;
+  // std::cout<<"getSenses."<<senses.at(4)<<std::endl;
+  // std::cout<<"getSenses."<<senses.at(5)<<std::endl;
+  // std::cout<<"getSenses."<<senses.at(6)<<std::endl;
+  // std::cout<<"getSenses."<<senses.at(7)<<std::endl;
+  // std::cout<<"----------------"<<std::endl;
   return senses;
 }
 
@@ -395,12 +409,12 @@ void Creature::stepInTime()
   // if (brain_->neurons_.at(12)->potential()>0.4) moveForward();
   // std::cout<<" at 14 = "<<brain_->neurons_.at(13)->potential()<<std::endl;
   // std::cout<<" at 15 = "<<brain_->neurons_.at(14)->potential()<<std::endl;
-  if (brain_->neurons_.at(13)->potential()>0.35) {
+  if (brain_->neurons_.at(13)->potential()>0.2) {
     bonus_watcher_left_ = true;
     turnLeft();
     moveForward();
   }
-  if (brain_->neurons_.at(14)->potential()>0.35) {
+  if (brain_->neurons_.at(14)->potential()>0.2) {
     bonus_watcher_right_ = true;
     turnRight();
     moveForward();

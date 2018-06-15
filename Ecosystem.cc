@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
+#include <string>
 // #include <math.h>
 // #include <string.h>
 // #include <TFile.h>
@@ -36,15 +37,16 @@
 
 int timeStep=2000;
 int nCreatures=300;
-int nPlanks=12;
-double plankLength=300.;
+int nPlanks=30;
+double plankLength=120.;
 double worldSize=500.;
-double speed=5.0;
-int max_generation=40;
+double plank_speed=1.0;
+double creature_speed=3.0;
+int max_generation=20000;
 double percent_kept=0.1;
 double brain_size=30;
 
-int seed=130;
+int seed=90;
 
 // Debug Levels
 // bits: xxxx
@@ -56,8 +58,8 @@ int debug = 0x2;
 
 // Mutation parameters
 double mu_newNeuron=0; // 0.001;
-double mu_newConnection=0.05;
-double mu_modConnection=0.05;
+double mu_newConnection=0.07; //0.05
+double mu_modConnection=0.07;
 
 int main(int argc, char *argv[])
 {
@@ -80,13 +82,14 @@ int main(int argc, char *argv[])
   for (unsigned int i=0; i<nCreatures; ++i)
   {
     // Spped must be < 1 otherwise collision detection problem
-    Creature *creature=new Creature("Creature", (worldSize/4 + r3->Rndm()*worldSize/2), (worldSize/4 + r3->Rndm()*worldSize/2), r3->Rndm()*2.*pi, brain_size, kBlue, 1., "Bot_"+itoa(i), worldSize, debug);
+    Creature *creature=new Creature("Creature", (worldSize/4 + r3->Rndm()*worldSize/2), (worldSize/4 + r3->Rndm()*worldSize/2), r3->Rndm()*2.*pi, brain_size, kBlue, creature_speed, "Bot_"+itoa(i), worldSize, debug);
     creatures.push_back(creature);
   }
   std::cout<<"Instantiated creatures."<<std::endl;
   for (unsigned int i=0; i<nPlanks; ++i)
   {
-    Plank *plank=new Plank("Plank", r3->Rndm()*worldSize, r3->Rndm()*worldSize, r3->Rndm()*2.*pi, kBlue, 1.0, "Plank_"+itoa(i), plankLength, worldSize, debug);
+    Plank *plank=new Plank("Plank", r3->Rndm()*worldSize, r3->Rndm()*worldSize, r3->Rndm()*2.*pi, kBlue, plank_speed, "Plank_"+itoa(i), plankLength, worldSize, debug);
+    // Plank *plank=new Plank("Plank", r3->Rndm()*worldSize, r3->Rndm()*worldSize, pi, kBlue, plank_speed, "Plank_"+itoa(i), plankLength, worldSize, debug);
     planks.push_back(plank);
   }
   std::cout<<"Instantiated planks."<<std::endl;
@@ -97,9 +100,26 @@ int main(int argc, char *argv[])
 
   TCanvas *c_World;
   TText *text=new TText(0.01, 0.01, "Generation 0");
-  text=new TText(0.01, 0.01, "Generation 0");
+  // text=new TText(0.01, 0.01, "Generation 0");
   text->SetNDC();
   text->SetTextFont(42);
+
+  TText *neuron_text_left=new TText(0.01, 0.01, "Generation 0");
+  neuron_text_left->SetNDC();
+  neuron_text_left->SetTextFont(10);
+  TText *neuron_text_right=new TText(0.01, 0.01, "Generation 0");
+  neuron_text_right->SetNDC();
+  neuron_text_right->SetTextFont(10);
+  TText *neuron_text_a=new TText(0.01, 0.01, "Generation 0");
+  neuron_text_a->SetNDC();
+  neuron_text_a->SetTextFont(10);
+  TText *neuron_text_b=new TText(0.01, 0.01, "Generation 0");
+  neuron_text_b->SetNDC();
+  neuron_text_b->SetTextFont(10);
+  TText *neuron_text_c=new TText(0.01, 0.01, "Generation 0");
+  neuron_text_c->SetNDC();
+  neuron_text_c->SetTextFont(10);
+
   if (decodeDebug(debug, 0)==1)
   {
     c_World=new TCanvas("c_World", "Natural Neural Network in Genetic Algorithm", 700, 700);
@@ -121,7 +141,6 @@ int main(int argc, char *argv[])
   while (true) {
     std::cout<<"Generation: "<<generation<<std::endl;
     std::cout<<"Start generation with: creatures "<<creatures.size()<<std::endl;
-    std::cout<<"max creatures "<<nCreatures*percent_kept<<std::endl;
     // bool stop_condition = creatures.size() <= nCreatures*percent_kept;
     // while (!stop_condition ||  generation == max_generation) { //generation
       // std::cin>>dtime;
@@ -129,18 +148,12 @@ int main(int argc, char *argv[])
       ++time;
       ++dtime;
 
-      if (generation > 10000) {
-        c_World->cd();
-        for (unsigned int i=0; i<creatures.size(); ++i) creatures.at(i)->draw();
-        for (unsigned int i=0; i<planks.size(); ++i) planks.at(i)->draw();
-        text->SetText(0.01, 0.01, ("Generation "+itoa(generation)).c_str());
-        text->Draw();
-        c_World->Update();
-      }
+
 
       for (unsigned int i=0; i<planks.size(); i++) {
         planks.at(i)->moveForward();
       }
+      creatures.at(0)->setColor(kRed);
       if (!creatures.empty()) {
         for (int i = creatures.size() - 1; i >= 0; i--) {
           Creature::Senses senses = creatures.at(i)->getSenses(planks);
@@ -156,7 +169,9 @@ int main(int argc, char *argv[])
               // creatures.at(i)->deleteDraw();
               creatures.erase(creatures.begin() + i);
 
-              Creature *creature=new Creature(creatures.at(0), mu_newNeuron, mu_newConnection, mu_modConnection);
+              int rand_best = 0 + (rand() % static_cast<int>(10 - 0 + 1));
+
+              Creature *creature=new Creature(creatures.at(rand_best), mu_newNeuron, mu_newConnection, mu_modConnection);
               creatures.push_back(creature);
               generation++;
               break;
@@ -170,7 +185,32 @@ int main(int argc, char *argv[])
       }
 
 
+      if (generation > max_generation) {
+        c_World->cd();
+        for (unsigned int i=0; i<creatures.size(); ++i) creatures.at(i)->draw();
+        for (unsigned int i=0; i<planks.size(); ++i) planks.at(i)->draw();
+        text->SetText(0.01, 0.01, ("Generation "+itoa(generation)).c_str());
 
+
+        TString n_0 = std::to_string(creatures.at(0)->brain_->neurons_.at(0)->potential());
+        TString n_1 = std::to_string(creatures.at(0)->brain_->neurons_.at(1)->potential());
+        TString n_2 = std::to_string(creatures.at(0)->brain_->neurons_.at(2)->potential());
+        TString n_13 = std::to_string(creatures.at(0)->brain_->neurons_.at(13)->potential());
+        TString n_14 = std::to_string(creatures.at(0)->brain_->neurons_.at(14)->potential());
+        neuron_text_left->SetText(0.5, 0.01, n_0);
+        neuron_text_right->SetText(0.5, 0.03, n_1);
+        neuron_text_a->SetText(0.5, 0.06, n_2);
+        neuron_text_b->SetText(0.5, 0.09, n_13);
+        neuron_text_c->SetText(0.5, 0.12, n_14);
+
+        text->Draw();
+        neuron_text_left->Draw();
+        neuron_text_right->Draw();
+        neuron_text_a->Draw();
+        neuron_text_b->Draw();
+        neuron_text_c->Draw();
+        c_World->Update();
+      }
       // if (true)
       // {
       //

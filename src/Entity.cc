@@ -34,9 +34,9 @@ void Entity::turnRight()
 
 void Entity::circularBoundaries()
 {
-  if (x_<0) x_=99;
+  if (x_<0) x_=worldSize_;
   if (x_>worldSize_) x_=1;
-  if (y_<0) y_=99;
+  if (y_<0) y_=worldSize_;
   if (y_>worldSize_) y_=1;
 }
 

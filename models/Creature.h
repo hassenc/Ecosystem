@@ -46,6 +46,7 @@ class Creature: public Entity
     void deleteDraw();
     void moveForward();
     void moveBackward();
+    void setColor(int bodyColor);
     // void seeEntity(Entity *entity);
     bool isColliding(Plank *plank);
     Senses getSenses(std::vector<Plank*> planks);
