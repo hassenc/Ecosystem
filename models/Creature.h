@@ -8,7 +8,9 @@
 
 
 #include "Plank.h"
+#include "BrainWrapper.h"
 #include "Brain.h"
+#include "BrainNN.h"
 #include "Entity.h"
 #include "TLine.h"
 
@@ -19,7 +21,7 @@ class Creature: public Entity
     typedef std::vector<double> Senses;
     typedef std::vector<Plank*> Planks;
 
-    Brain *brain_;
+    BrainWrapper *brain_;
     std::string name_;
     TEllipse *left_eye, *right_eye;
     // TEllipse *visRange1_, *visRange2_, *visRange3_;
@@ -38,8 +40,9 @@ class Creature: public Entity
 
   public:
 
-    Creature(std::string type, double x, double y, double theta, int brainSize, int bodyColor, double speed, std::string name, double worldSize, int debug = 1);
+    Creature(std::string type, double x, double y, double theta, std::string brainType, int brainSize, int bodyColor, double speed, std::string name, double worldSize, int debug = 1);
     Creature(Creature *parentCreature, double mu_newNeuron, double mu_newConnection, double mu_modConnection);
+    Creature(Creature *parentCreature, Creature *parentCreature_2);
     ~Creature();
 
     void draw();

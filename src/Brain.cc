@@ -17,7 +17,7 @@ ALL RIGHTS RESERVED
 #include "../models/Brain.h"
 #include "../models/ToolBox.h"
 
-Brain::Brain(int size, int debug, std::string name)
+Brain::Brain(int size, int debug, std::string name): BrainWrapper()
 {
   debug_=debug;
   if (decodeDebug(debug_, 2)==1)
@@ -61,8 +61,13 @@ Brain::Brain(int size, int debug, std::string name)
   }
 }
 
-Brain::Brain(Brain *parentBrain, int diffBrainSize, int debug, std::string name, double mu_newConnection, double mu_modConnection)
+Brain::Brain(Brain *parentBrain, int diffBrainSize, int debug, std::string name, double mu_newConnection, double mu_modConnection, double mu_newNeuron): BrainWrapper()
 {
+  double rnd=r3->Rndm();
+  if (rnd<mu_newNeuron/2. && parentBrain->neurons_.size()>20) diffBrainSize=-1;
+  else if (rnd>1.-mu_newNeuron/2.) diffBrainSize=1;
+
+
   int brainSize=parentBrain->neurons_.size()+diffBrainSize;
 
   debug_=debug;
@@ -237,6 +242,24 @@ void Brain::stepInTime()
     }
   }
 
+}
+
+void Brain::think(std::vector<double> input)
+{
+  for (unsigned int i=0; i<input.size(); ++i)
+  {
+    neurons_.at(i)->receive(input.at(i));
+  }
+}
+
+double Brain::left_output()
+{
+  return neurons_.at(13)->potential();
+}
+
+double Brain::right_output()
+{
+  return neurons_.at(14)->potential();
 }
 
 void Brain::print()

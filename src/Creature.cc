@@ -6,6 +6,7 @@
 */
 
 #include "../models/Creature.h"
+//#include "../models/NeuralNetwork.h"
 // #include "../models/Brain.h"
 #include "../models/ToolBox.h"
 
@@ -20,7 +21,7 @@ double eyeDistance= 3.;
 bool bonus_watcher_left_= false;
 bool bonus_watcher_right_= false;
 
-Creature::Creature(std::string type, double x, double y, double theta, int brainSize, int bodyColor, double speed, std::string name, double worldSize, int debug): Entity(worldSize)
+Creature::Creature(std::string type, double x, double y, double theta, std::string brainType, int brainSize, int bodyColor, double speed, std::string name, double worldSize, int debug): Entity(worldSize)
 {
   debug_=debug;
   worldSize_=worldSize;
@@ -38,7 +39,12 @@ Creature::Creature(std::string type, double x, double y, double theta, int brain
   bonus_watcher_left_ = false;
   bonus_watcher_right_ = false;
   // visualAngle_=visualAngle;
-  brain_=new Brain(brainSize, debug_, name_);
+  if (brainType == "NN") {
+    brain_= new BrainNN(debug_);
+  } else {
+    brain_= new Brain(brainSize, debug_, name_);
+  }
+
   if (decodeDebug(debug_, 0)==1)
   {
     circle_=new TEllipse(x_, y_, creature_size);
@@ -116,11 +122,28 @@ Creature::Creature(Creature *parentCreature, double mu_newNeuron, double mu_newC
     // visPeriphery2_->SetLineColor(bodyColor_);
   }
 
-  double rnd=r3->Rndm();
-  int diffBrainSize=0;
-  if (rnd<mu_newNeuron/2. && parentCreature->brain_->neurons_.size()>20) diffBrainSize=-1;
-  else if (rnd>1.-mu_newNeuron/2.) diffBrainSize=1;
-  brain_=new Brain(parentCreature->brain_, diffBrainSize, debug_, name_, mu_newConnection, mu_modConnection);
+
+  brain_=new Brain( dynamic_cast<Brain*>(parentCreature->brain_), 0, debug_, name_, mu_newConnection, mu_modConnection, mu_newNeuron);
+}
+
+Creature::Creature(Creature *parentCreature, Creature *parentCreature_2): Entity(parentCreature->worldSize_)
+{
+  ++(parentCreature->kids_);
+  debug_=parentCreature->debug_;
+  worldSize_=parentCreature->worldSize_;
+  type_=parentCreature->type_;
+  name_=parentCreature->name_+"_"+itoa(parentCreature->kids_);
+  bodyColor_=parentCreature->bodyColor_;
+  speed_=parentCreature->speed_;
+  numberOfcaptors_ = numberOfcaptors;
+  eyeAngle_ = eyeAngle;
+  eyeDistance_ = eyeDistance;
+  kids_=0;
+  x_=worldSize_/4 + r3->Rndm()*parentCreature->worldSize_/2;
+  y_=worldSize_/4 + r3->Rndm()*parentCreature->worldSize_/2;
+  theta_=parentCreature->theta_;
+
+  brain_= new BrainNN(debug_, dynamic_cast<BrainNN*>(parentCreature->brain_), dynamic_cast<BrainNN*>(parentCreature_2->brain_));
 }
 
 Creature::~Creature()
@@ -136,7 +159,7 @@ Creature::~Creature()
     // visPeriphery1_->Delete();
     // visPeriphery2_->Delete();
   }
-  // delete brain_;
+  delete brain_;
 }
 
 void Creature::deleteDraw()
@@ -207,6 +230,8 @@ void Creature::setColor(int color)
 //     visPeriphery2_->Draw();
 //   }
 // }
+
+
 
 void Creature::moveForward()
 {
@@ -396,10 +421,7 @@ double Creature::getNearestDistanceForAngle(std::vector<Plank*> planks, double a
 
 void Creature::think(Senses senses)
 {
-  for (unsigned int i=0; i<this->numberOfcaptors_; ++i)
-  {
-    brain_->neurons_.at(i)->receive(senses.at(i));
-  }
+  brain_->think(senses);
 }
 
 void Creature::stepInTime()
@@ -409,12 +431,12 @@ void Creature::stepInTime()
   // if (brain_->neurons_.at(12)->potential()>0.4) moveForward();
   // std::cout<<" at 14 = "<<brain_->neurons_.at(13)->potential()<<std::endl;
   // std::cout<<" at 15 = "<<brain_->neurons_.at(14)->potential()<<std::endl;
-  if (brain_->neurons_.at(13)->potential()>0.2) {
+  if (brain_->left_output()>0.2) {
     bonus_watcher_left_ = true;
     turnLeft();
     moveForward();
   }
-  if (brain_->neurons_.at(14)->potential()>0.2) {
+  if (brain_->right_output()>0.2) {
     bonus_watcher_right_ = true;
     turnRight();
     moveForward();

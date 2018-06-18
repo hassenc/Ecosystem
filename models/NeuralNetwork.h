@@ -8,7 +8,7 @@
 #pragma once
 #include <stdint.h>
 #include <vector>
-#include <cmath> 
+#include <cmath>
 
 //-------------------------------------------------------------------------
 
@@ -57,6 +57,7 @@ namespace BPN
 
         std::vector<double> const& GetInputHiddenWeights() const { return m_weightsInputHidden; }
         std::vector<double> const& GetHiddenOutputWeights() const { return m_weightsHiddenOutput; }
+        std::vector<double> getWeights();
 
     private:
 

@@ -6,7 +6,7 @@
 
 #include "../models/NeuralNetwork.h"
 #include <assert.h>
-#include <stdlib.h>
+#include <iostream>
 #include <ctime>
 #include <random>
 
@@ -31,6 +31,8 @@ namespace BPN
     {
         assert( settings.m_numInputs > 0 && settings.m_numOutputs > 0 && settings.m_numHidden > 0 );
         InitializeNetwork();
+        std::cout<<"m_numInputs."<<settings.m_numInputs<<std::endl;
+        std::cout<<"m_numOutputs."<<settings.m_numOutputs<<std::endl;
         LoadWeights( weights );
     }
 
@@ -59,7 +61,8 @@ namespace BPN
 
         // Create storage and initialize and layer weights
         //-------------------------------------------------------------------------
-
+        std::cout<<"totalNumInputs."<<totalNumInputs<<std::endl;
+        std::cout<<"totalNumHiddens."<<totalNumHiddens<<std::endl;
         int32_t const numInputHiddenWeights = totalNumInputs * totalNumHiddens;
         int32_t const numHiddenOutputWeights = totalNumHiddens * m_numOutputs;
         m_weightsInputHidden.resize( numInputHiddenWeights );
@@ -118,8 +121,32 @@ namespace BPN
         }
     }
 
+    std::vector<double> Network::getWeights()
+    {
+        std::vector<double> weights;
+        int32_t const numInputHiddenWeights = m_numInputs * m_numHidden;
+        int32_t const numHiddenOutputWeights = m_numHidden * m_numOutputs;
+
+        int32_t weightIdx = 0;
+        for ( auto InputHiddenIdx = 0; InputHiddenIdx < numInputHiddenWeights; InputHiddenIdx++ )
+        {
+            weights.push_back(m_weightsInputHidden[InputHiddenIdx]);
+            weightIdx++;
+        }
+
+        for ( auto HiddenOutputIdx = 0; HiddenOutputIdx < numHiddenOutputWeights; HiddenOutputIdx++ )
+        {
+            weights.push_back(m_weightsHiddenOutput[HiddenOutputIdx]);
+            weightIdx++;
+        }
+        assert( weights.size() == numInputHiddenWeights + numHiddenOutputWeights );
+
+        return weights;
+    }
+
     std::vector<int32_t> const& Network::Evaluate( std::vector<double> const& input )
     {
+        // std::cout<<"m_numInputs."<<m_numInputs<<std::endl;
         assert( input.size() == m_numInputs );
         assert( m_inputNeurons.back() == -1.0 && m_hiddenNeurons.back() == -1.0 );
 

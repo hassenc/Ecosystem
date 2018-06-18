@@ -35,16 +35,28 @@
 #include "models/ToolBox.h"
 #include "interface/CommandLineArguments.h"
 
+std::string brainType="XX";
+
 int timeStep=2000;
-int nCreatures=300;
+int nCreatures=2;
 int nPlanks=30;
 double plankLength=120.;
 double worldSize=500.;
 double plank_speed=1.0;
 double creature_speed=3.0;
-int max_generation=20000;
+int max_generation=200;
 double percent_kept=0.1;
 double brain_size=30;
+// int timeStep=2000;
+// int nCreatures=300;
+// int nPlanks=30;
+// double plankLength=120.;
+// double worldSize=500.;
+// double plank_speed=1.0;
+// double creature_speed=3.0;
+// int max_generation=20000;
+// double percent_kept=0.1;
+// double brain_size=30;
 
 int seed=90;
 
@@ -82,7 +94,7 @@ int main(int argc, char *argv[])
   for (unsigned int i=0; i<nCreatures; ++i)
   {
     // Spped must be < 1 otherwise collision detection problem
-    Creature *creature=new Creature("Creature", (worldSize/4 + r3->Rndm()*worldSize/2), (worldSize/4 + r3->Rndm()*worldSize/2), r3->Rndm()*2.*pi, brain_size, kBlue, creature_speed, "Bot_"+itoa(i), worldSize, debug);
+    Creature *creature=new Creature("Creature", (worldSize/4 + r3->Rndm()*worldSize/2), (worldSize/4 + r3->Rndm()*worldSize/2), r3->Rndm()*2.*pi, brainType, brain_size, kBlue, creature_speed, "Bot_"+itoa(i), worldSize, debug);
     creatures.push_back(creature);
   }
   std::cout<<"Instantiated creatures."<<std::endl;
@@ -154,24 +166,41 @@ int main(int argc, char *argv[])
         planks.at(i)->moveForward();
       }
       creatures.at(0)->setColor(kRed);
+
       if (!creatures.empty()) {
         for (int i = creatures.size() - 1; i >= 0; i--) {
+          std::cout<<"moving creat: "<<i<<std::endl;
           Creature::Senses senses = creatures.at(i)->getSenses(planks);
+          // std::cout<<"moving creat2: "<<i<<std::endl;
           creatures.at(i)->think(senses);
+          // std::cout<<"moving creat3: "<<i<<std::endl;
           creatures.at(i)->stepInTime();
+          // std::cout<<"checking creature2"<<i<<std::endl;
 
           // creatures.at(i)->deleteDraw();
           for (unsigned int j=0; j<planks.size(); j++) {
             bool isColliding = creatures.at(i)->isColliding(planks.at(j));
             if (isColliding) {
               // std::cout<<"Collision for creature "<<i<<std::endl;
+              std::cout<<"creatures.begin() "<<((dynamic_cast<BrainNN*>(creatures.at(0)->brain_))->neuralNet_->getWeights().at(0))<<std::endl;
+              std::cout<<"creatures.begin() "<<((dynamic_cast<BrainNN*>(creatures.at(1)->brain_))->neuralNet_->getWeights().at(0))<<std::endl;
+              std::cout<<"creatures.begin() "<<(i)<<std::endl;
               delete *(creatures.begin() + i);
-              // creatures.at(i)->deleteDraw();
               creatures.erase(creatures.begin() + i);
+              int rand_best = 0 + (rand() % static_cast<int>(1 - 0));
+              std::cout<<"rand_best."<<rand_best<<std::endl;
 
-              int rand_best = 0 + (rand() % static_cast<int>(10 - 0 + 1));
-
-              Creature *creature=new Creature(creatures.at(rand_best), mu_newNeuron, mu_newConnection, mu_modConnection);
+              Creature *creature;
+              // std::cout<<"Instantiated planks."<<std::endl;
+              if (brainType == "NN") {
+                int rand_best_2 = 0 + (rand() % static_cast<int>(1 - 0));
+                std::cout<<"rand2."<<rand_best_2<<std::endl;
+                std::cout<<"name."<<creatures.at(0)<<std::endl;
+                creature=new Creature(creatures.at(rand_best), creatures.at(rand_best_2));
+                // std::cout<<"Brain created."<<std::endl;
+              } else {
+                creature=new Creature(creatures.at(rand_best), mu_newNeuron, mu_newConnection, mu_modConnection);
+              }
               creatures.push_back(creature);
               generation++;
               break;
@@ -182,6 +211,8 @@ int main(int argc, char *argv[])
           //   break;
           // }
         }
+      } else {
+        std::cout<<"Empty creatures !!"<<std::endl;
       }
 
 
@@ -192,16 +223,16 @@ int main(int argc, char *argv[])
         text->SetText(0.01, 0.01, ("Generation "+itoa(generation)).c_str());
 
 
-        TString n_0 = std::to_string(creatures.at(0)->brain_->neurons_.at(0)->potential());
-        TString n_1 = std::to_string(creatures.at(0)->brain_->neurons_.at(1)->potential());
-        TString n_2 = std::to_string(creatures.at(0)->brain_->neurons_.at(2)->potential());
-        TString n_13 = std::to_string(creatures.at(0)->brain_->neurons_.at(13)->potential());
-        TString n_14 = std::to_string(creatures.at(0)->brain_->neurons_.at(14)->potential());
-        neuron_text_left->SetText(0.5, 0.01, n_0);
-        neuron_text_right->SetText(0.5, 0.03, n_1);
-        neuron_text_a->SetText(0.5, 0.06, n_2);
-        neuron_text_b->SetText(0.5, 0.09, n_13);
-        neuron_text_c->SetText(0.5, 0.12, n_14);
+        // TString n_0 = std::to_string(creatures.at(0)->brain_->neurons_.at(0)->potential());
+        // TString n_1 = std::to_string(creatures.at(0)->brain_->neurons_.at(1)->potential());
+        // TString n_2 = std::to_string(creatures.at(0)->brain_->neurons_.at(2)->potential());
+        // TString n_13 = std::to_string(creatures.at(0)->brain_->neurons_.at(13)->potential());
+        // TString n_14 = std::to_string(creatures.at(0)->brain_->neurons_.at(14)->potential());
+        // neuron_text_left->SetText(0.5, 0.01, n_0);
+        // neuron_text_right->SetText(0.5, 0.03, n_1);
+        // neuron_text_a->SetText(0.5, 0.06, n_2);
+        // neuron_text_b->SetText(0.5, 0.09, n_13);
+        // neuron_text_c->SetText(0.5, 0.12, n_14);
 
         text->Draw();
         neuron_text_left->Draw();
