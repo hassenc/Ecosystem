@@ -15,7 +15,7 @@ class BrainNN : public BrainWrapper
 
     std::vector<double> inputs_;
     std::vector<int32_t> outputs_;
-    BPN::Network * neuralNet_;
+    BPN::Network *neuralNet_;
 
     int debug_;
     std::string name_;

@@ -35,16 +35,16 @@
 #include "models/ToolBox.h"
 #include "interface/CommandLineArguments.h"
 
-std::string brainType="XX";
+std::string brainType="NN";
 
 int timeStep=2000;
-int nCreatures=2;
+int nCreatures=300;
 int nPlanks=30;
 double plankLength=120.;
 double worldSize=500.;
 double plank_speed=1.0;
 double creature_speed=3.0;
-int max_generation=200;
+int max_generation=10000;
 double percent_kept=0.1;
 double brain_size=30;
 // int timeStep=2000;
@@ -97,6 +97,8 @@ int main(int argc, char *argv[])
     Creature *creature=new Creature("Creature", (worldSize/4 + r3->Rndm()*worldSize/2), (worldSize/4 + r3->Rndm()*worldSize/2), r3->Rndm()*2.*pi, brainType, brain_size, kBlue, creature_speed, "Bot_"+itoa(i), worldSize, debug);
     creatures.push_back(creature);
   }
+
+
   std::cout<<"Instantiated creatures."<<std::endl;
   for (unsigned int i=0; i<nPlanks; ++i)
   {
@@ -115,6 +117,45 @@ int main(int argc, char *argv[])
   // text=new TText(0.01, 0.01, "Generation 0");
   text->SetNDC();
   text->SetTextFont(42);
+
+  // std::cout<<"nbr creatres."<<creatures.size()<<std::endl;
+  // for (unsigned int i=0; i<creatures.size(); ++i)
+  // {
+  //   std::cout<<"creature."<<creatures.at(i)<<std::endl;
+  // }
+  // delete *(creatures.begin() + 0);
+  // creatures.erase(creatures.begin() + 0);
+  // std::cout<<"Deleted creature."<<std::endl;
+  //
+  // for (unsigned int i=0; i<creatures.size(); ++i)
+  // {
+  //   std::cout<<"creature."<<creatures.at(i)<<std::endl;
+  // }
+  //
+  // creatures.push_back(new Creature(creatures.at(0), creatures.at(0)));
+  // std::cout<<"Added creature ."<<std::endl;
+  //
+  // for (unsigned int i=0; i<creatures.size(); ++i)
+  // {
+  //   std::cout<<"creature."<<creatures.at(i)<<std::endl;
+  // }
+  //
+  // delete *(creatures.begin() + 1);
+  // creatures.erase(creatures.begin() + 1);
+  // std::cout<<"Deleted creature."<<std::endl;
+  //
+  // for (unsigned int i=0; i<creatures.size(); ++i)
+  // {
+  //   std::cout<<"creature."<<creatures.at(i)<<std::endl;
+  // }
+  //
+  // creatures.push_back(new Creature(creatures.at(0), creatures.at(0)));
+  // std::cout<<"Added creature ."<<std::endl;
+  //
+  // for (unsigned int i=0; i<creatures.size(); ++i)
+  // {
+  //   std::cout<<"creature."<<creatures.at(i)<<std::endl;
+  // }
 
   TText *neuron_text_left=new TText(0.01, 0.01, "Generation 0");
   neuron_text_left->SetNDC();
@@ -169,7 +210,7 @@ int main(int argc, char *argv[])
 
       if (!creatures.empty()) {
         for (int i = creatures.size() - 1; i >= 0; i--) {
-          std::cout<<"moving creat: "<<i<<std::endl;
+          // std::cout<<"moving creat: "<<i<<std::endl;
           Creature::Senses senses = creatures.at(i)->getSenses(planks);
           // std::cout<<"moving creat2: "<<i<<std::endl;
           creatures.at(i)->think(senses);
@@ -181,21 +222,16 @@ int main(int argc, char *argv[])
           for (unsigned int j=0; j<planks.size(); j++) {
             bool isColliding = creatures.at(i)->isColliding(planks.at(j));
             if (isColliding) {
-              // std::cout<<"Collision for creature "<<i<<std::endl;
-              std::cout<<"creatures.begin() "<<((dynamic_cast<BrainNN*>(creatures.at(0)->brain_))->neuralNet_->getWeights().at(0))<<std::endl;
-              std::cout<<"creatures.begin() "<<((dynamic_cast<BrainNN*>(creatures.at(1)->brain_))->neuralNet_->getWeights().at(0))<<std::endl;
-              std::cout<<"creatures.begin() "<<(i)<<std::endl;
               delete *(creatures.begin() + i);
               creatures.erase(creatures.begin() + i);
-              int rand_best = 0 + (rand() % static_cast<int>(1 - 0));
-              std::cout<<"rand_best."<<rand_best<<std::endl;
+              int rand_best = 0 + (rand() % static_cast<int>(10 - 0 + 1 ));
+              // std::cout<<"rand_best."<<rand_best<<std::endl;
 
               Creature *creature;
               // std::cout<<"Instantiated planks."<<std::endl;
               if (brainType == "NN") {
-                int rand_best_2 = 0 + (rand() % static_cast<int>(1 - 0));
-                std::cout<<"rand2."<<rand_best_2<<std::endl;
-                std::cout<<"name."<<creatures.at(0)<<std::endl;
+                int rand_best_2 = 0 + (rand() % static_cast<int>(10 - 0 + 1));
+                // std::cout<<"rand2."<<rand_best_2<<std::endl;
                 creature=new Creature(creatures.at(rand_best), creatures.at(rand_best_2));
                 // std::cout<<"Brain created."<<std::endl;
               } else {

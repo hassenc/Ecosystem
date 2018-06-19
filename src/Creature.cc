@@ -107,19 +107,6 @@ Creature::Creature(Creature *parentCreature, double mu_newNeuron, double mu_newC
     right_eye=new TEllipse(x_ + eyeDistance_*cos(theta_ + eyeAngle_), y_ + eyeDistance_*sin(theta_ + eyeAngle_), eye_size);
     right_eye->SetLineColor(kBlack);
     right_eye->SetFillColor(bodyColor_);
-    // visRange1_=new TEllipse(x_, y_, 30, 30, 360.+(theta_-visualAngle_/2.)*180./pi, 360.+(theta_+visualAngle_/2.)*180./pi);
-    // visRange2_=new TEllipse(x_, y_, 60, 60, 360.+(theta_-visualAngle_/2.)*180./pi, 360.+(theta_+visualAngle_/2.)*180./pi);
-    // visRange3_=new TEllipse(x_, y_, 100, 100, 360.+(theta_-visualAngle_/2.)*180./pi, 360.+(theta_+visualAngle_/2.)*180./pi);
-    // visPeriphery1_=new TLine(x_, y_, x_+100.*cos(theta_+visualAngle_/6.), y_+100.*sin(theta_+visualAngle_/6.));
-    // visPeriphery2_=new TLine(x_, y_, x_+100.*cos(theta_-visualAngle_/6.), y_+100.*sin(theta_-visualAngle_/6.));
-    // visRange1_->SetFillStyle(0);
-    // visRange2_->SetFillStyle(0);
-    // visRange3_->SetFillStyle(0);
-    // visRange1_->SetLineColor(bodyColor_);
-    // visRange2_->SetLineColor(bodyColor_);
-    // visRange3_->SetLineColor(bodyColor_);
-    // visPeriphery1_->SetLineColor(bodyColor_);
-    // visPeriphery2_->SetLineColor(bodyColor_);
   }
 
 
@@ -142,6 +129,19 @@ Creature::Creature(Creature *parentCreature, Creature *parentCreature_2): Entity
   x_=worldSize_/4 + r3->Rndm()*parentCreature->worldSize_/2;
   y_=worldSize_/4 + r3->Rndm()*parentCreature->worldSize_/2;
   theta_=parentCreature->theta_;
+
+  if (decodeDebug(debug_, 0)==1)
+  {
+    circle_=new TEllipse(x_, y_, creature_size);
+    circle_->SetLineColor(kBlack);
+    circle_->SetFillColor(kWhite);
+    left_eye=new TEllipse(x_ + eyeDistance_*cos(theta_ - eyeAngle_), y_ + eyeDistance_*sin(theta_ - eyeAngle_), eye_size);
+    left_eye->SetLineColor(kBlack);
+    left_eye->SetFillColor(bodyColor_);
+    right_eye=new TEllipse(x_ + eyeDistance_*cos(theta_ + eyeAngle_), y_ + eyeDistance_*sin(theta_ + eyeAngle_), eye_size);
+    right_eye->SetLineColor(kBlack);
+    right_eye->SetFillColor(bodyColor_);
+  }
 
   brain_= new BrainNN(debug_, dynamic_cast<BrainNN*>(parentCreature->brain_), dynamic_cast<BrainNN*>(parentCreature_2->brain_));
 }
@@ -285,7 +285,8 @@ Creature::Senses Creature::getSenses(std::vector<Plank*> planks) {
 
     angle = i * pi * 2 / this->numberOfcaptors_;
     double res = this->getNearestDistanceForAngle(planks,  angle);
-    sens = 1 - (res/ (worldSize_*sqrt(2)))*2;
+    // sens = 1 - (res/ (worldSize_*sqrt(2)))*2;
+    sens = 1 - (res/ (worldSize_*sqrt(2)));
     // if (res < (worldSize_/2)) {
     //   // sens = 1;
     // } else {
@@ -430,7 +431,6 @@ void Creature::stepInTime()
   // brain_->print();
   // if (brain_->neurons_.at(12)->potential()>0.4) moveForward();
   // std::cout<<" at 14 = "<<brain_->neurons_.at(13)->potential()<<std::endl;
-  // std::cout<<" at 15 = "<<brain_->neurons_.at(14)->potential()<<std::endl;
   if (brain_->left_output()>0.2) {
     bonus_watcher_left_ = true;
     turnLeft();

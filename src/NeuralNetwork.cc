@@ -31,8 +31,8 @@ namespace BPN
     {
         assert( settings.m_numInputs > 0 && settings.m_numOutputs > 0 && settings.m_numHidden > 0 );
         InitializeNetwork();
-        std::cout<<"m_numInputs."<<settings.m_numInputs<<std::endl;
-        std::cout<<"m_numOutputs."<<settings.m_numOutputs<<std::endl;
+        // std::cout<<"m_numInputs."<<settings.m_numInputs<<std::endl;
+        // std::cout<<"m_numOutputs."<<settings.m_numOutputs<<std::endl;
         LoadWeights( weights );
     }
 
@@ -61,8 +61,8 @@ namespace BPN
 
         // Create storage and initialize and layer weights
         //-------------------------------------------------------------------------
-        std::cout<<"totalNumInputs."<<totalNumInputs<<std::endl;
-        std::cout<<"totalNumHiddens."<<totalNumHiddens<<std::endl;
+        // std::cout<<"totalNumInputs."<<totalNumInputs<<std::endl;
+        // std::cout<<"totalNumHiddens."<<totalNumHiddens<<std::endl;
         int32_t const numInputHiddenWeights = totalNumInputs * totalNumHiddens;
         int32_t const numHiddenOutputWeights = totalNumHiddens * m_numOutputs;
         m_weightsInputHidden.resize( numInputHiddenWeights );
@@ -189,6 +189,8 @@ namespace BPN
 
             // Apply activation function and clamp the result
             m_outputNeurons[outputIdx] = SigmoidActivationFunction( m_outputNeurons[outputIdx] );
+            // std::cout<<"m_outputNeurons[outputIdx]."<<m_outputNeurons[outputIdx]<<std::endl;
+            // m_outputNeurons[outputIdx]
             m_clampedOutputs[outputIdx] = ClampOutputValue( m_outputNeurons[outputIdx] );
         }
 
