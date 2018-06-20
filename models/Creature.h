@@ -30,6 +30,8 @@ class Creature: public Entity
     int bodyColor_;
     double speed_;
     double worldSize_;
+    int life_time_ = 0;
+    int nbr_actions_ = 0;
     int debug_;
     int kids_;
     double eyeAngle_;
@@ -52,6 +54,7 @@ class Creature: public Entity
     void setColor(int bodyColor);
     // void seeEntity(Entity *entity);
     bool isColliding(Plank *plank);
+    bool isHiding();
     Senses getSenses(std::vector<Plank*> planks);
     double getNearestDistanceForAngle(std::vector<Plank*> planks, double angle);
     // void seePlanks(std::vector<Plank*> *planks);

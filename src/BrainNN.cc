@@ -19,7 +19,7 @@ BrainNN::BrainNN(int debug): BrainWrapper()
   {
   }
   // Create neural network
-  BPN::Network::Settings networkSettings{ 8, 16, 2 };
+  BPN::Network::Settings networkSettings{ 17, 25, 1 };
   neuralNet_ = new BPN::Network( networkSettings );
   // std::cout<<"xx."<<std::endl;
   // neuralNet_ = nn;
@@ -28,7 +28,7 @@ BrainNN::BrainNN(int debug): BrainWrapper()
 BrainNN::BrainNN(int debug, BrainNN *parentBrain, BrainNN *parentBrain_2): BrainWrapper()
 {
   debug_=debug;
-  double mutation_rnd = 0.2;
+  double mutation_rnd = 0.08;
   std::vector<double> brain_1_weights = parentBrain->neuralNet_->getWeights();
   std::vector<double> brain_2_weights = parentBrain_2->neuralNet_->getWeights();
   std::vector<double> crossover_weigths = getCrossOverWeights(brain_1_weights, brain_2_weights);
@@ -54,7 +54,7 @@ BrainNN::BrainNN(int debug, BrainNN *parentBrain, BrainNN *parentBrain_2): Brain
       crossover_weigths.at(i) = crossover_weigths.at(i) * (0.5 + r3->Rndm());
     }
   }
-  BPN::Network::Settings networkSettings{ 8, 16, 2 };
+  BPN::Network::Settings networkSettings{ 17, 25, 1 };
   neuralNet_ = new BPN::Network( networkSettings,  crossover_weigths);
   // neuralNet_ = nn;
 }
@@ -66,17 +66,28 @@ BrainNN::~BrainNN()
 
 void BrainNN::think(std::vector<double> input)
 {
-  inputs_ = input;
+  std::vector<double> inputs;
+  for (size_t i = 0; i < input.size(); i++) {
+    inputs.push_back(input.at(i));
+  }
+  if (outputs_.size() > 0) {
+    inputs.push_back(outputs_.at(0));
+  } else {
+    inputs.push_back(-1);
+  }
+  inputs_ = inputs;
 }
 
 double BrainNN::left_output()
 {
-  return outputs_.at(0);
+  // std::cout<<" output"<<outputs_.at(0)<<std::endl;
+
+  return outputs_.at(0) == 1;
 }
 
 double BrainNN::right_output()
 {
-  return outputs_.at(1);
+  return outputs_.at(0) == 0;
 }
 
 

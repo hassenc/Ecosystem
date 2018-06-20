@@ -39,12 +39,12 @@ std::string brainType="NN";
 
 int timeStep=2000;
 int nCreatures=300;
-int nPlanks=30;
-double plankLength=120.;
+int nPlanks=15;
+double plankLength=400.;
 double worldSize=500.;
-double plank_speed=1.0;
-double creature_speed=3.0;
-int max_generation=10000;
+double plank_speed=0.5;
+double creature_speed=2.0;
+int max_generation=1000000;
 double percent_kept=0.1;
 double brain_size=30;
 // int timeStep=2000;
@@ -221,16 +221,17 @@ int main(int argc, char *argv[])
           // creatures.at(i)->deleteDraw();
           for (unsigned int j=0; j<planks.size(); j++) {
             bool isColliding = creatures.at(i)->isColliding(planks.at(j));
+            // bool isHiding = creatures.at(i)->isHiding();
             if (isColliding) {
               delete *(creatures.begin() + i);
               creatures.erase(creatures.begin() + i);
-              int rand_best = 0 + (rand() % static_cast<int>(10 - 0 + 1 ));
+              int rand_best = 0 + (rand() % static_cast<int>(15 - 0 ));
               // std::cout<<"rand_best."<<rand_best<<std::endl;
 
               Creature *creature;
               // std::cout<<"Instantiated planks."<<std::endl;
               if (brainType == "NN") {
-                int rand_best_2 = 0 + (rand() % static_cast<int>(10 - 0 + 1));
+                int rand_best_2 = 0 + (rand() % static_cast<int>(15 - 0 ));
                 // std::cout<<"rand2."<<rand_best_2<<std::endl;
                 creature=new Creature(creatures.at(rand_best), creatures.at(rand_best_2));
                 // std::cout<<"Brain created."<<std::endl;

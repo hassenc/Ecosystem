@@ -14,7 +14,7 @@
 
 double creature_size = 5.0;
 double eye_size = 2.0;
-double numberOfcaptors = 8;
+double numberOfcaptors = 16;
 double eyeAngle=pi/3;
 double eyeDistance= 3.;
 
@@ -422,7 +422,13 @@ double Creature::getNearestDistanceForAngle(std::vector<Plank*> planks, double a
 
 void Creature::think(Senses senses)
 {
+  life_time_ = life_time_ +1;
   brain_->think(senses);
+}
+
+bool Creature::isHiding()
+{
+  return life_time_> 20 && nbr_actions_ < 4 ;
 }
 
 void Creature::stepInTime()
@@ -431,16 +437,20 @@ void Creature::stepInTime()
   // brain_->print();
   // if (brain_->neurons_.at(12)->potential()>0.4) moveForward();
   // std::cout<<" at 14 = "<<brain_->neurons_.at(13)->potential()<<std::endl;
-  if (brain_->left_output()>0.2) {
+
+  if (brain_->left_output()==1) {
     bonus_watcher_left_ = true;
+    nbr_actions_ = nbr_actions_ +1;
     turnLeft();
     moveForward();
   }
-  if (brain_->right_output()>0.2) {
+  if (brain_->right_output()==1) {
     bonus_watcher_right_ = true;
+    nbr_actions_ = nbr_actions_ +1;
     turnRight();
     moveForward();
   }
+  // moveForward();
   // if (brain_->neurons_.at(15)->potential()>0.4) moveBackward();
 }
 //
